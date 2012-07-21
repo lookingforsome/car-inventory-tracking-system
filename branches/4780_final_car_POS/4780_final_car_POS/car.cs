@@ -51,10 +51,5 @@ using System.Text;
 
         #region methods
 
-            public car getCarByID(int passedId)
-            {
-                car c = new car(1,1,1234,"123ede34", 23000);
-                return c;
-            }
         #endregion
     }
