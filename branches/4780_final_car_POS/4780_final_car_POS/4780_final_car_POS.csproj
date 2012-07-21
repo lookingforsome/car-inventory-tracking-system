@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="car.cs" />
     <Compile Include="clsDataAccess.cs" />
+    <Compile Include="DataControl.cs" />
     <Compile Include="dataValidator.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
