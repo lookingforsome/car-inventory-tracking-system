@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="car.cs" />
     <Compile Include="clsDataAccess.cs" />
     <Compile Include="dataValidator.cs" />
     <Compile Include="Form1.cs">
