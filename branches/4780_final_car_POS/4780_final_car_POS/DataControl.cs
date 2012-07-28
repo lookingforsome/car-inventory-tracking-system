@@ -52,7 +52,67 @@ static class DataControl
             throw ex;
         }
     }
+    /// <summary>
+    /// Method returns a vehicles model string according to the vehicles model Key number.
+    /// </summary>
+    /// <param name="modelKey">the vehicles model key number</param>
+    /// <returns>the name string of the vehicle model</returns>
+    public static string getCarModel(int modelKey)
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
 
+            //SQL Query to the database to retrieve the vehicles model name
+            string sqlQuery = "SELECT ModelName FROM Models WHERE ModelKey = " + modelKey + ";";
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+            //set the model string from the queried value, and return it
+            string model = ds.Tables[0].Rows[0][0].ToString();
+
+            return model;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+    /// <summary>
+    /// Method returns a vehicles make string according to the vehicles model Key number.
+    /// </summary>
+    /// <param name="modelKey">the vehicles model key number</param>
+    /// <returns>the name string of the vehicle make</returns>
+    public static string getCarMake(int modelKey)
+    {
+        try
+        {
+
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
+
+            //SQL Query to the database to retrieve the vehicles make key
+            string sqlQuery = "SELECT MakeKey FROM Models WHERE ModelKey = " + modelKey + ";";
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+            int makeKey = Convert.ToInt32(ds.Tables[0].Rows[0][0].ToString());
+
+            //SQL Query to the database to retrieve the vehicles make name
+            sqlQuery = "SELECT MakeName FROM Makes WHERE MakeKey = " + makeKey + ";";
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+            //set the make string from the queried value, and return it
+            string make = ds.Tables[0].Rows[0][0].ToString();
+
+            return make;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
     /// <summary>
     /// Method inserts a new invoice with its given invoice items to the database
     /// </summary>
