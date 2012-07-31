@@ -69,7 +69,7 @@ class Invoice
 		try
 		{
 			//gets a list of car objects and copies that into the car object list
-			InvoiceItems = DataControl.GetCarsByInvoiceID(InvoiceKey);
+			InvoiceItems = DataControl.getCarsByInvoiceID(InvoiceKey);
 		}
 		catch (Exception ex)
 		{
