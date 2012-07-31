@@ -209,9 +209,7 @@ static class DataControl
         {
             clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
             int result = 0;                         // Represents whether the query was successful
-            int iRet = 0;                           // Represents how many rows are returned from the query
             decimal totalCost = 0;                  // Represents the invoice total cost
-            DataSet ds;                             // Dataset to hold results from database queries
             int updateErrors = 0;                   // Represents the number of update errors when updating invoice items
 
             DateTime dtPurchaseDate = DateTime.Parse(purchaseDate);     //converted purchase date to a date time object
@@ -474,6 +472,57 @@ static class DataControl
             }
         }
         catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+    /// <summary>
+    /// Retrieves all inventory item's and their IDs.
+    /// The item's name will consist of the year, make, and model.
+    /// </summary>
+    /// <returns>the current inventory items' full names and ID's</returns>
+    public static DataSet getInventoryItems()
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
+
+            //SQL Query to the database to search for all current inventory items, then return them in a dataset.
+            string sqlQuery = "SELECT InventoryKey, VehicleYear + ' ' + Make + ' ' + ModelName AS InventoryName " + 
+                              "FROM Inventory, Models, Makes " +
+                              "WHERE Inventory.ModelKey = Models.ModelKey AND Models.MakeKey = Makes.MakeKey;";
+
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+            return ds;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+    /// <summary>
+    /// Retrieves an inventory item's cost from the database 
+    /// given a certain inventory ID.
+    /// </summary>
+    /// <param name="inventoryID">the inventory ID number</param>
+    /// <returns>the inventory item's cost; format: $00.00</returns>
+    public static string getInventoryItemCost(int inventoryID)
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            string cost;                            //string to hold the returned item's cost from the database
+
+            //SQL Query to the database to retrieve the given inventory item's cost, then return it.
+            string sqlQuery = "SELECT Price FROM Inventory WHERE InventoryKey = " + inventoryID + ";";
+            cost = da.ExecuteScalarSQL(sqlQuery);
+            
+            return cost;
+        }
+        catch(Exception ex)
         {
             throw ex;
         }
