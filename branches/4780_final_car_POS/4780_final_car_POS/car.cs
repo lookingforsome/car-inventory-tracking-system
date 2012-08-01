@@ -13,6 +13,7 @@ using System.Text;
                 model = passedModel;
                 year = passedYear;
                 price = passedPrice;
+
             }
 
         #endregion
