@@ -77,6 +77,13 @@ class Invoice
 		}
 	}
 
+	//private Invoice PassInvoiceToInvoiceForm()
+	//{
+
+	//     return Invoice;
+	//}
+
+
 	
 
 }
