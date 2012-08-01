@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-    class car
+    class Car
     {
         #region constructor
        
-            public car(int passedModel, int passedYear, decimal passedPrice)
+            public Car(int passedModel, int passedYear, decimal passedPrice, string passedVin, string passedDescription)
             {
                 //sets the attributes of the car
                 model = passedModel;
                 year = passedYear;
                 price = passedPrice;
+                vin = passedVin;
+                description = passedDescription;
 
             }
 
@@ -34,6 +36,16 @@ using System.Text;
             /// Stores the price of the car
             /// </summary>
             public decimal price { get; set; }
+
+            /// <summary>
+            /// Stores the VIN of the car
+            /// </summary>
+            public string vin { get; set; }
+
+            /// <summary>
+            /// Stores the description for the car
+            /// </summary>
+            public string description { get; set; }
 
         #endregion
 
