@@ -15,7 +15,7 @@ static class DataControl
     /// </summary>
     /// <param name="id">invoice ID number</param>
     /// <returns>List of car objects that represent the invoice's items</returns>
-    public static List<car> getCarsByInvoiceID(int invoiceId)
+    public static List<Car> getCarsByInvoiceID(int invoiceId)
     {
         try
         {
@@ -30,7 +30,7 @@ static class DataControl
             ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
 
             //create a list of all the invoiceItems, if there is an invoice found, add the invoice's items to the list
-            List<car> invoiceItems = new List<car>();
+            List<Car> invoiceItems = new List<Car>();
             
             if (iRet > 0)
             {
@@ -41,8 +41,8 @@ static class DataControl
                     sqlQuery = "SELECT * FROM Inventory WHERE InventoryKey = " + ds.Tables[0].Rows[x][0].ToString() + ";";
                     ds2 = da.ExecuteSQLStatement(sqlQuery, ref iRet2); 
 
-                    car tempInvoiceItem = new car(Convert.ToInt32(ds2.Tables[0].Rows[x][1].ToString()), Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()), Convert.ToDecimal(ds2.Tables[0].Rows[x][2].ToString()));
-                    invoiceItems.Add(tempInvoiceItem);
+                   // Car tempInvoiceItem = new Car(Convert.ToInt32(ds2.Tables[0].Rows[x][1].ToString()), Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()), Convert.ToDecimal(ds2.Tables[0].Rows[x][2].ToString()));
+                    //invoiceItems.Add(tempInvoiceItem);
                 }
             }
             return invoiceItems;
@@ -121,7 +121,7 @@ static class DataControl
     /// <param name="purchaseDate">Date of purchase</param>
     /// <param name="invoiceItems">List of all the invoice items objects (car objects)</param>
     /// <returns>true if successful, false otherwise</returns>
-    public static bool AddInvoice(int salesPersonKey, int customerKey, string purchaseDate, List<car> invoiceItems)
+    public static bool AddInvoice(int salesPersonKey, int customerKey, string purchaseDate, List<Car> invoiceItems)
     {
         try
         {
@@ -203,7 +203,7 @@ static class DataControl
     /// <param name="purchaseDate">Date of purchase</param>
     /// <param name="invoiceItems">List of invoice items objects (car objects)</param>
     /// <returns>true if successful, false otherwise</returns>
-    public static bool EditInvoice(int invoiceID, int salesPersonKey, int customerKey, string purchaseDate, List<car> invoiceItems)
+    public static bool EditInvoice(int invoiceID, int salesPersonKey, int customerKey, string purchaseDate, List<Car> invoiceItems)
     {
         try
         {
@@ -730,6 +730,44 @@ static class DataControl
             }
             else
                 return salesManName;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    /// <summary>
+    /// Method retrieves all the invoices by a given cost
+    /// </summary>
+    /// <param name="cost">total cost for the invoices</param>
+    /// <returns>List of all the invoices that fit the total cost criteria</returns>
+    public static BindingList<Car> getCarList()
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
+
+            //SQL Query to the database to search for invoices given a certain cost
+            string sqlQuery = "SELECT Models.ModelName, Inventory.VIN, Inventory.Price, Inventory.VehicleYear, Inventory.Description FROM Inventory INNER JOIN Models ON Models.ModelKey = Inventory.ModelKey";
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+            //create a list of all the invoices, if there are invoices found, add them to the list
+            BindingList<Car> cars = new BindingList<Car>();
+
+            if (iRet > 0)
+            {
+                //go through the dataset adding the invoices
+                for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
+                {
+                    //Car(int passedModel, int passedYear, decimal passedPrice, string passedVin, string passedDescription)
+                    Car tempCar = new Car(int.Parse(ds.Tables[0].Rows[x][0].ToString()), int.Parse(ds.Tables[0].Rows[x][3].ToString()), decimal.Parse(ds.Tables[0].Rows[x][2].ToString()), ds.Tables[0].Rows[x][1].ToString(), ds.Tables[0].Rows[x][4].ToString());
+                    cars.Add(tempCar);
+                }
+            }
+            return cars;
         }
         catch (Exception ex)
         {
