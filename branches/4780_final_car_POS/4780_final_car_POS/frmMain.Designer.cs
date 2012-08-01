@@ -50,10 +50,16 @@
             this.lblItemCost = new System.Windows.Forms.Label();
             this.lblSelectItem = new System.Windows.Forms.Label();
             this.cmbxInventory = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.gbInvoiceItems = new System.Windows.Forms.GroupBox();
             this.menuStrip1.SuspendLayout();
             this.gbInvoiceOptions.SuspendLayout();
             this.gbInvoiceForm.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInvoiceItems)).BeginInit();
+            this.gbInvoiceItems.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -63,7 +69,7 @@
             this.menuToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(778, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(757, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -95,7 +101,7 @@
             this.gbInvoiceOptions.Controls.Add(this.btnDelete);
             this.gbInvoiceOptions.Controls.Add(this.btnEdit);
             this.gbInvoiceOptions.Controls.Add(this.btnCreate);
-            this.gbInvoiceOptions.Location = new System.Drawing.Point(177, 46);
+            this.gbInvoiceOptions.Location = new System.Drawing.Point(167, 46);
             this.gbInvoiceOptions.Name = "gbInvoiceOptions";
             this.gbInvoiceOptions.Size = new System.Drawing.Size(424, 100);
             this.gbInvoiceOptions.TabIndex = 1;
@@ -139,7 +145,11 @@
             // 
             // gbInvoiceForm
             // 
-            this.gbInvoiceForm.Controls.Add(this.dgvInvoiceItems);
+            this.gbInvoiceForm.Controls.Add(this.gbInvoiceItems);
+            this.gbInvoiceForm.Controls.Add(this.label2);
+            this.gbInvoiceForm.Controls.Add(this.comboBox2);
+            this.gbInvoiceForm.Controls.Add(this.label1);
+            this.gbInvoiceForm.Controls.Add(this.comboBox1);
             this.gbInvoiceForm.Controls.Add(this.txtTotalCost);
             this.gbInvoiceForm.Controls.Add(this.lblTotalCost);
             this.gbInvoiceForm.Controls.Add(this.btnSave);
@@ -147,14 +157,9 @@
             this.gbInvoiceForm.Controls.Add(this.dtpInvoiceDate);
             this.gbInvoiceForm.Controls.Add(this.lblInvoiceNum);
             this.gbInvoiceForm.Controls.Add(this.lblInvoiceLabel);
-            this.gbInvoiceForm.Controls.Add(this.btnAddItem);
-            this.gbInvoiceForm.Controls.Add(this.txtItemCost);
-            this.gbInvoiceForm.Controls.Add(this.lblItemCost);
-            this.gbInvoiceForm.Controls.Add(this.lblSelectItem);
-            this.gbInvoiceForm.Controls.Add(this.cmbxInventory);
-            this.gbInvoiceForm.Location = new System.Drawing.Point(34, 176);
+            this.gbInvoiceForm.Location = new System.Drawing.Point(24, 176);
             this.gbInvoiceForm.Name = "gbInvoiceForm";
-            this.gbInvoiceForm.Size = new System.Drawing.Size(708, 454);
+            this.gbInvoiceForm.Size = new System.Drawing.Size(708, 480);
             this.gbInvoiceForm.TabIndex = 2;
             this.gbInvoiceForm.TabStop = false;
             this.gbInvoiceForm.Text = "Invoice Form Viewer";
@@ -162,14 +167,14 @@
             // dgvInvoiceItems
             // 
             this.dgvInvoiceItems.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvInvoiceItems.Location = new System.Drawing.Point(63, 137);
+            this.dgvInvoiceItems.Location = new System.Drawing.Point(23, 64);
             this.dgvInvoiceItems.Name = "dgvInvoiceItems";
-            this.dgvInvoiceItems.Size = new System.Drawing.Size(564, 229);
+            this.dgvInvoiceItems.Size = new System.Drawing.Size(589, 229);
             this.dgvInvoiceItems.TabIndex = 12;
             // 
             // txtTotalCost
             // 
-            this.txtTotalCost.Location = new System.Drawing.Point(194, 407);
+            this.txtTotalCost.Location = new System.Drawing.Point(179, 434);
             this.txtTotalCost.Name = "txtTotalCost";
             this.txtTotalCost.ReadOnly = true;
             this.txtTotalCost.Size = new System.Drawing.Size(100, 20);
@@ -179,7 +184,7 @@
             // 
             this.lblTotalCost.AutoSize = true;
             this.lblTotalCost.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTotalCost.Location = new System.Drawing.Point(73, 410);
+            this.lblTotalCost.Location = new System.Drawing.Point(48, 437);
             this.lblTotalCost.Name = "lblTotalCost";
             this.lblTotalCost.Size = new System.Drawing.Size(115, 13);
             this.lblTotalCost.TabIndex = 10;
@@ -189,7 +194,7 @@
             // 
             this.btnSave.Enabled = false;
             this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSave.Location = new System.Drawing.Point(504, 395);
+            this.btnSave.Location = new System.Drawing.Point(517, 423);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(123, 43);
             this.btnSave.TabIndex = 9;
@@ -201,7 +206,7 @@
             // 
             this.lblDate.AutoSize = true;
             this.lblDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDate.Location = new System.Drawing.Point(345, 33);
+            this.lblDate.Location = new System.Drawing.Point(390, 32);
             this.lblDate.Name = "lblDate";
             this.lblDate.Size = new System.Drawing.Size(38, 13);
             this.lblDate.TabIndex = 8;
@@ -211,7 +216,7 @@
             // 
             this.dtpInvoiceDate.Enabled = false;
             this.dtpInvoiceDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpInvoiceDate.Location = new System.Drawing.Point(417, 30);
+            this.dtpInvoiceDate.Location = new System.Drawing.Point(436, 30);
             this.dtpInvoiceDate.Name = "dtpInvoiceDate";
             this.dtpInvoiceDate.Size = new System.Drawing.Size(100, 20);
             this.dtpInvoiceDate.TabIndex = 7;
@@ -220,7 +225,7 @@
             // 
             this.lblInvoiceNum.AutoSize = true;
             this.lblInvoiceNum.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblInvoiceNum.Location = new System.Drawing.Point(134, 30);
+            this.lblInvoiceNum.Location = new System.Drawing.Point(120, 30);
             this.lblInvoiceNum.Name = "lblInvoiceNum";
             this.lblInvoiceNum.Size = new System.Drawing.Size(0, 16);
             this.lblInvoiceNum.TabIndex = 6;
@@ -229,7 +234,7 @@
             // 
             this.lblInvoiceLabel.AutoSize = true;
             this.lblInvoiceLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblInvoiceLabel.Location = new System.Drawing.Point(61, 30);
+            this.lblInvoiceLabel.Location = new System.Drawing.Point(47, 30);
             this.lblInvoiceLabel.Name = "lblInvoiceLabel";
             this.lblInvoiceLabel.Size = new System.Drawing.Size(74, 16);
             this.lblInvoiceLabel.TabIndex = 5;
@@ -239,7 +244,7 @@
             // 
             this.btnAddItem.Enabled = false;
             this.btnAddItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAddItem.Location = new System.Drawing.Point(552, 66);
+            this.btnAddItem.Location = new System.Drawing.Point(537, 15);
             this.btnAddItem.Name = "btnAddItem";
             this.btnAddItem.Size = new System.Drawing.Size(75, 39);
             this.btnAddItem.TabIndex = 4;
@@ -249,7 +254,7 @@
             // 
             // txtItemCost
             // 
-            this.txtItemCost.Location = new System.Drawing.Point(417, 77);
+            this.txtItemCost.Location = new System.Drawing.Point(408, 25);
             this.txtItemCost.Name = "txtItemCost";
             this.txtItemCost.ReadOnly = true;
             this.txtItemCost.Size = new System.Drawing.Size(100, 20);
@@ -259,7 +264,7 @@
             // 
             this.lblItemCost.AutoSize = true;
             this.lblItemCost.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblItemCost.Location = new System.Drawing.Point(345, 80);
+            this.lblItemCost.Location = new System.Drawing.Point(336, 29);
             this.lblItemCost.Name = "lblItemCost";
             this.lblItemCost.Size = new System.Drawing.Size(64, 13);
             this.lblItemCost.TabIndex = 2;
@@ -269,7 +274,7 @@
             // 
             this.lblSelectItem.AutoSize = true;
             this.lblSelectItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSelectItem.Location = new System.Drawing.Point(60, 79);
+            this.lblSelectItem.Location = new System.Drawing.Point(21, 29);
             this.lblSelectItem.Name = "lblSelectItem";
             this.lblSelectItem.Size = new System.Drawing.Size(132, 13);
             this.lblSelectItem.TabIndex = 1;
@@ -279,17 +284,70 @@
             // 
             this.cmbxInventory.Enabled = false;
             this.cmbxInventory.FormattingEnabled = true;
-            this.cmbxInventory.Location = new System.Drawing.Point(194, 76);
+            this.cmbxInventory.Location = new System.Drawing.Point(155, 26);
             this.cmbxInventory.Name = "cmbxInventory";
             this.cmbxInventory.Size = new System.Drawing.Size(121, 21);
             this.cmbxInventory.TabIndex = 0;
             this.cmbxInventory.SelectedIndexChanged += new System.EventHandler(this.cmbxInventory_SelectedIndexChanged);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(46, 68);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(125, 13);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Select Sales Person:";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.Enabled = false;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(180, 65);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.TabIndex = 13;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(325, 68);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(103, 13);
+            this.label2.TabIndex = 16;
+            this.label2.Text = "Select Customer:";
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.Enabled = false;
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(434, 65);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(121, 21);
+            this.comboBox2.TabIndex = 15;
+            // 
+            // gbInvoiceItems
+            // 
+            this.gbInvoiceItems.Controls.Add(this.lblSelectItem);
+            this.gbInvoiceItems.Controls.Add(this.cmbxInventory);
+            this.gbInvoiceItems.Controls.Add(this.lblItemCost);
+            this.gbInvoiceItems.Controls.Add(this.txtItemCost);
+            this.gbInvoiceItems.Controls.Add(this.dgvInvoiceItems);
+            this.gbInvoiceItems.Controls.Add(this.btnAddItem);
+            this.gbInvoiceItems.Location = new System.Drawing.Point(28, 95);
+            this.gbInvoiceItems.Name = "gbInvoiceItems";
+            this.gbInvoiceItems.Size = new System.Drawing.Size(637, 316);
+            this.gbInvoiceItems.TabIndex = 17;
+            this.gbInvoiceItems.TabStop = false;
+            this.gbInvoiceItems.Text = "Invoice Items";
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(778, 642);
+            this.ClientSize = new System.Drawing.Size(757, 668);
             this.Controls.Add(this.gbInvoiceForm);
             this.Controls.Add(this.gbInvoiceOptions);
             this.Controls.Add(this.menuStrip1);
@@ -302,6 +360,8 @@
             this.gbInvoiceForm.ResumeLayout(false);
             this.gbInvoiceForm.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInvoiceItems)).EndInit();
+            this.gbInvoiceItems.ResumeLayout(false);
+            this.gbInvoiceItems.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -331,6 +391,11 @@
         private System.Windows.Forms.Label lblTotalCost;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.DataGridView dgvInvoiceItems;
+        private System.Windows.Forms.GroupBox gbInvoiceItems;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }
 
