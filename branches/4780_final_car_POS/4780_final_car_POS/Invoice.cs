@@ -35,7 +35,7 @@ class Invoice
 	/// <summary>
 	/// Generic LIst of Type Car to hold all the cars that were sold to a customer.
 	/// </summary>
-	private List<car> InvoiceItems = new List<car>();
+	private List<Car> InvoiceItems = new List<Car>();
 
 	/// <summary>
 	/// Constructor to create an invoice object
