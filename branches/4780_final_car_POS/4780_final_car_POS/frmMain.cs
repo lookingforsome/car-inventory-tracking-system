@@ -252,6 +252,9 @@ namespace _4780_final_car_POS
                 txtTotalCost.Text = "";
                 dtpInvoiceDate.Text = "";
                 dgvInvoiceItems.DataSource = null;
+
+                //disable access to the menu button
+                menuToolStripMenuItem.Enabled = false;
             }
             catch (Exception ex)
             {
@@ -292,6 +295,9 @@ namespace _4780_final_car_POS
                 cmbxInventory.Enabled = true;
                 dtpInvoiceDate.Enabled = true;
                 btnAddItem.Enabled = true;
+
+                //disable access to the menu button
+                menuToolStripMenuItem.Enabled = false;
             }
             catch (Exception ex)
             {
@@ -412,6 +418,9 @@ namespace _4780_final_car_POS
                         btnDelete.Enabled = true;
 
                         isCreate = false;   //flag the form that we are done creating an invoice
+
+                        //enable access to the menu button
+                        menuToolStripMenuItem.Enabled = true;
                     }
                     else
                     {
@@ -431,6 +440,9 @@ namespace _4780_final_car_POS
                         btnDelete.Enabled = true;
 
                         isEdit = false;     //flag the form that we are done editing an invoice
+
+                        //enable access to the menu button
+                        menuToolStripMenuItem.Enabled = true;
                     }
                     else
                     {
