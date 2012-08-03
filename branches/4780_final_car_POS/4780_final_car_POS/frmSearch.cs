@@ -48,9 +48,9 @@ namespace _4780_final_car_POS
 			InvoiceKeyColumn.HeaderText = "Invoice ID";
 			InvoiceKeyColumn.Name = "InvoiceID";
 
-			CustomerFirstNameColumn.DataPropertyName = "CustomerFirstName";
-			CustomerFirstNameColumn.HeaderText = "First Name";
-			CustomerFirstNameColumn.Name = "FirstName";
+			CustomerFirstNameColumn.DataPropertyName = "customerName";
+			CustomerFirstNameColumn.HeaderText = "Full Name";
+			CustomerFirstNameColumn.Name = "customerName";
 			//CustomerFirstNameColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
 			//CustomerFirstNameColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
 
@@ -58,9 +58,9 @@ namespace _4780_final_car_POS
 			CustomerLastNameColumn.HeaderText = "Last Name";
 			CustomerLastNameColumn.Name = "LastName";
 
-			SalesPersonFirstName.DataPropertyName = "LastName";
-			SalesPersonFirstName.HeaderText = "Last Name";
-			SalesPersonFirstName.Name = "LastName";
+			SalesPersonFirstName.DataPropertyName = "customerName";
+			SalesPersonFirstName.HeaderText = "SalesPerson First Name";
+			SalesPersonFirstName.Name = "SalesPersonFirstName";
 
 			SalesPersonLastName.DataPropertyName = "LastName";
 			SalesPersonLastName.HeaderText = "Last Name";
@@ -74,9 +74,9 @@ namespace _4780_final_car_POS
 			CostColumn.HeaderText = "Last Name";
 			CostColumn.Name = "LastName";
 
-			SelectInvoiceButtonColumn.HeaderText = "Delete Employee";
-			SelectInvoiceButtonColumn.Name = "DeleteEmployee";
-			SelectInvoiceButtonColumn.Text = "Delete the Employee";
+			SelectInvoiceButtonColumn.HeaderText = "Select Invoice";
+			SelectInvoiceButtonColumn.Name = "SelectInvoice";
+			SelectInvoiceButtonColumn.Text = "Select the Invoice";
 			SelectInvoiceButtonColumn.UseColumnTextForButtonValue = true;
 			SelectInvoiceButtonColumn.Width = 200;
 
