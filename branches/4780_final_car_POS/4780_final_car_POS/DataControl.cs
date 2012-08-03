@@ -707,7 +707,7 @@ static class DataControl
             string customerName = "";               // Represents the customer's full name
 
             // SQL Query to the database to retrieve the given customer
-            string sqlQuery = "SELECT FirstName + ' ' + LastName AS Name FROM Customers WHERE CustomerKey = " + customerKey + ";";
+            string sqlQuery = "SELECT FirstName, LastName FROM Customers WHERE CustomerKey = " + customerKey + ";";
             ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
 
             //create the customer's full name from the database's results
@@ -739,7 +739,7 @@ static class DataControl
             string salesManName = "";               // Represents the sale person's full name
 
             // SQL Query to the database to retrieve the given sales person
-            string sqlQuery = "SELECT FirstName + ' ' + LastName AS Name FROM Salesmen WHERE SalesmanKey = " + salesPersonKey + ";";
+            string sqlQuery = "SELECT FirstName, LastName FROM Salesmen WHERE SalesmanKey = " + salesPersonKey + ";";
             ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
 
             //create the customer's full name from the database's results
