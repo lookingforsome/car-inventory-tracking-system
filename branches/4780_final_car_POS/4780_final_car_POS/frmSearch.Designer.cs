@@ -36,13 +36,12 @@
 			this.cmbInvoiceDate = new System.Windows.Forms.ComboBox();
 			this.lblTotalCost = new System.Windows.Forms.Label();
 			this.cmbTotalCost = new System.Windows.Forms.ComboBox();
-			this.btnSelectInvoice = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.InvoiceDataGridView)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// btnCancel
 			// 
-			this.btnCancel.Location = new System.Drawing.Point(303, 404);
+			this.btnCancel.Location = new System.Drawing.Point(654, 404);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(85, 23);
 			this.btnCancel.TabIndex = 0;
@@ -109,21 +108,11 @@
 			this.cmbTotalCost.Size = new System.Drawing.Size(121, 21);
 			this.cmbTotalCost.TabIndex = 6;
 			// 
-			// btnSelectInvoice
-			// 
-			this.btnSelectInvoice.Location = new System.Drawing.Point(417, 404);
-			this.btnSelectInvoice.Name = "btnSelectInvoice";
-			this.btnSelectInvoice.Size = new System.Drawing.Size(89, 23);
-			this.btnSelectInvoice.TabIndex = 8;
-			this.btnSelectInvoice.Text = "Select Invoice";
-			this.btnSelectInvoice.UseVisualStyleBackColor = true;
-			// 
 			// frmSearch
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(812, 449);
-			this.Controls.Add(this.btnSelectInvoice);
 			this.Controls.Add(this.lblTotalCost);
 			this.Controls.Add(this.cmbTotalCost);
 			this.Controls.Add(this.lblInvoiceDate);
@@ -150,6 +139,5 @@
 	   private System.Windows.Forms.ComboBox cmbInvoiceDate;
 	   private System.Windows.Forms.Label lblTotalCost;
 	   private System.Windows.Forms.ComboBox cmbTotalCost;
-	   private System.Windows.Forms.Button btnSelectInvoice;
     }
 }

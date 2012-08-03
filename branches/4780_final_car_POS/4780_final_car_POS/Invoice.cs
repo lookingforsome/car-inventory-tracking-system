@@ -19,11 +19,11 @@ class Invoice
 	/// <summary>
 	/// Autoproperty for int salespersonkey
 	/// </summary>
-	public int SalesPersonKey { get; set; }
+	public string SalesPersonName { get; set; }
 	/// <summary>
 	/// Auto property for int CustomerKey
 	/// </summary>
-	public int CustomerKey { get; set; }
+	public string CustomerName { get; set; }
 	/// <summary>
 	/// AutoProperty for PurchaseDate
 	/// </summary>
@@ -44,13 +44,14 @@ class Invoice
 	/// <param name="CustomerKey">CustomerKey from db</param>
 	/// <param name="SalesPersonKey">SalesPersonKey from db</param>
 	/// <param name="PurchaseDate">PurchaseDate from db</param>
-	public Invoice(string InvoiceKey, string CustomerKey, string SalesPersonKey, string PurchaseDate, string Cost)
+	//public Invoice(string InvoiceKey, string CustomerKey, string SalesPersonKey, string PurchaseDate, string Cost)
+	public Invoice(string InvoiceKey, string CustomerName, string SalesPersonName, string PurchaseDate, string Cost)
 	{
 		try
 		{
 			this.InvoiceKey = Convert.ToInt32(InvoiceKey);
-			this.SalesPersonKey = Convert.ToInt32(SalesPersonKey);
-			this.CustomerKey = Convert.ToInt32(CustomerKey);
+			this.SalesPersonName = SalesPersonName;
+			this.CustomerName = CustomerName;
 			this.PurchaseDate = PurchaseDate;
 			this.Cost = Convert.ToDecimal(Cost);
 		}
