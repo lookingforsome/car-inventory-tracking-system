@@ -539,6 +539,8 @@ static class DataControl
             clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
             int iRet = 0;                           // Represents the number of rows
             DataSet ds;                             // Dataset to hold results from database queries
+            string customerName;                    // Customer Name retrieved from the database
+            string salesPersonName;                 // Sales person name retrieved from the database
 
             //SQL Query to the database to search for invoices given a certain cost
             string sqlQuery = "SELECT * FROM Invoices WHERE TotalCost = " + cost + ";";
@@ -552,7 +554,10 @@ static class DataControl
                 //go through the dataset adding the invoices
                 for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
                 {
-                    Invoice tempInvoice = new Invoice(ds.Tables[0].Rows[x][0].ToString(), ds.Tables[0].Rows[x][2].ToString(), ds.Tables[0].Rows[x][3].ToString(), ds.Tables[0].Rows[x][4].ToString(), ds.Tables[0].Rows[x][1].ToString());
+                    customerName = getCustomerByID(Convert.ToInt32(ds.Tables[0].Rows[x][2].ToString()));
+                    salesPersonName = getSalesPersonByID(Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()));
+
+                    Invoice tempInvoice = new Invoice(ds.Tables[0].Rows[x][0].ToString(), customerName, salesPersonName, ds.Tables[0].Rows[x][4].ToString(), ds.Tables[0].Rows[x][1].ToString());
                     invoices.Add(tempInvoice);
                 }
             }
@@ -575,6 +580,8 @@ static class DataControl
             clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
             int iRet = 0;                           // Represents the number of rows
             DataSet ds;                             // Dataset to hold results from database queries
+            string customerName;                    // Customer Name retrieved from the database
+            string salesPersonName;                 // Sales person name retrieved from the database
 
             DateTime dtPurchaseDate = DateTime.Parse(purchaseDate); // convert the purchase date string to a date time object
 
@@ -590,7 +597,10 @@ static class DataControl
                 //go through the dataset adding the invoices
                 for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
                 {
-                    Invoice tempInvoice = new Invoice(ds.Tables[0].Rows[x][0].ToString(), ds.Tables[0].Rows[x][2].ToString(), ds.Tables[0].Rows[x][3].ToString(), ds.Tables[0].Rows[x][4].ToString(), ds.Tables[0].Rows[x][1].ToString());
+                    customerName = getCustomerByID(Convert.ToInt32(ds.Tables[0].Rows[x][2].ToString()));
+                    salesPersonName = getSalesPersonByID(Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()));
+
+                    Invoice tempInvoice = new Invoice(ds.Tables[0].Rows[x][0].ToString(), customerName, salesPersonName, ds.Tables[0].Rows[x][4].ToString(), ds.Tables[0].Rows[x][1].ToString());
                     invoices.Add(tempInvoice);
                 }
             }
@@ -613,6 +623,8 @@ static class DataControl
             clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
             int iRet = 0;                           // Represents the number of rows
             DataSet ds;                             // Dataset to hold results from database queries
+            string customerName;                    // Customer Name retrieved from the database
+            string salesPersonName;                 // Sales person name retrieved from the database
 
             //SQL Query to the database to search for the given invoice
             string sqlQuery = "SELECT * FROM Invoices WHERE InvoiceKey = " + invoiceID + ";";
@@ -626,7 +638,10 @@ static class DataControl
                 //go through the dataset adding the invoice
                 for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
                 {
-                    Invoice tempInvoice = new Invoice(ds.Tables[0].Rows[x][0].ToString(), ds.Tables[0].Rows[x][2].ToString(), ds.Tables[0].Rows[x][3].ToString(), ds.Tables[0].Rows[x][4].ToString(), ds.Tables[0].Rows[x][1].ToString());
+                    customerName = getCustomerByID(Convert.ToInt32(ds.Tables[0].Rows[x][2].ToString()));
+                    salesPersonName = getSalesPersonByID(Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()));
+
+                    Invoice tempInvoice = new Invoice(ds.Tables[0].Rows[x][0].ToString(), customerName, salesPersonName, ds.Tables[0].Rows[x][4].ToString(), ds.Tables[0].Rows[x][1].ToString());
                     invoices.Add(tempInvoice);
                 }
             }
@@ -648,6 +663,8 @@ static class DataControl
             clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
             int iRet = 0;                           // Represents the number of rows
             DataSet ds;                             // Dataset to hold results from database queries
+            string customerName;                    // Customer Name retrieved from the database
+            string salesPersonName;                 // Sales person name retrieved from the database
 
             //SQL Query to the database to retrieve all of the invoices
             string sqlQuery = "SELECT * FROM Invoices;";
@@ -661,7 +678,10 @@ static class DataControl
                 //go through the dataset adding the invoices
                 for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
                 {
-                    Invoice tempInvoice = new Invoice(ds.Tables[0].Rows[x][0].ToString(), ds.Tables[0].Rows[x][2].ToString(), ds.Tables[0].Rows[x][3].ToString(), ds.Tables[0].Rows[x][4].ToString(), ds.Tables[0].Rows[x][1].ToString());
+                    customerName = getCustomerByID(Convert.ToInt32(ds.Tables[0].Rows[x][2].ToString()));
+                    salesPersonName = getSalesPersonByID(Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()));
+
+                    Invoice tempInvoice = new Invoice(ds.Tables[0].Rows[x][0].ToString(), customerName, salesPersonName, ds.Tables[0].Rows[x][4].ToString(), ds.Tables[0].Rows[x][1].ToString());
                     invoices.Add(tempInvoice);
                 }
             }
@@ -687,7 +707,7 @@ static class DataControl
             string customerName = "";               // Represents the customer's full name
 
             // SQL Query to the database to retrieve the given customer
-            string sqlQuery = "SELECT FirstName, LastName FROM Customers WHERE CustomerKey = " + customerKey + ";";
+            string sqlQuery = "SELECT FirstName + ' ' + LastName AS Name FROM Customers WHERE CustomerKey = " + customerKey + ";";
             ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
 
             //create the customer's full name from the database's results
@@ -719,7 +739,7 @@ static class DataControl
             string salesManName = "";               // Represents the sale person's full name
 
             // SQL Query to the database to retrieve the given sales person
-            string sqlQuery = "SELECT FirstName, LastName FROM Salesmen WHERE SalesmanKey = " + salesPersonKey + ";";
+            string sqlQuery = "SELECT FirstName + ' ' + LastName AS Name FROM Salesmen WHERE SalesmanKey = " + salesPersonKey + ";";
             ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
 
             //create the customer's full name from the database's results
