@@ -757,6 +757,31 @@ static class DataControl
         }
     }
 
+    //public static string getModels()
+    //{
+    //    try
+    //    {
+    //        //clsDataAccess da= new clsDataAccess();     // Object that connects to the database and executes queries
+    //        int iRet = 0;                               //stores the number of rows returned
+
+    //        //creates a dataset to use
+    //        DataSet ds;
+    //        //query to populate the dataset
+    //        string sqlQuery = "SELECT Models.ModelKey, Models.ModelName FROM Models";
+
+    //        //executes the query and puts it in the dataset
+    //        return ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+    //        //DataSet ds;
+    //        //return ds;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        throw ex;
+    //    }
+        
+    //}
+
+    //Michael Meyer
     /// <summary>
     /// Method retrieves all the invoices by a given cost
     /// </summary>

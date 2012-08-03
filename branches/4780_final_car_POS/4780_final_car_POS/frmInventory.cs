@@ -81,7 +81,36 @@ namespace _4780_final_car_POS
             dataGridView1.DataSource = inventory;
         }
 
-        #region Button Methods
+        #region Methods
+
+        /// <summary>
+        /// Populates the model dropdown list
+        /// </summary>
+        public void populateModelDropdown()
+        {
+            try
+            {
+                //Creates a dataset to hold the data
+                //DataSet ds;
+
+                //How many rows are returned
+                //int rowsReturned = 0;
+
+                //creates a data set and stores the values in ds
+                //ds = DataControl.getModels();
+                //ds = dc.ExecuteSQLStatement("SELECT Flight_ID, Flight_Number, Aircraft_Type FROM FLIGHT", ref rowsReturned);
+
+                //goes through the dataset and populates the drop down box
+                //for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
+                //{
+                //    //cb_flightNumbers.Items.Add(ds.Tables[0].Rows[x][1].ToString());
+                //}
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -104,18 +133,18 @@ namespace _4780_final_car_POS
                 }
             }
             
-            //Make sure there is an employee
-            if (emp != null)
-            {
-                //Determine if the "Delete" button was clicked
-                if (e.ColumnIndex == dataGridView1.Columns["DeleteEmployee"].Index)
-                {
-                    //Remove the employee from the list
-                    inventory.Remove(tempCar);
-                    //or
-                    //dataGridView1.Rows.Remove(dataGridView1.Rows[e.RowIndex]);
-                }
-            }
+            ////Make sure there is an employee
+            //if (emp != null)
+            //{
+            //    //Determine if the "Delete" button was clicked
+            //    if (e.ColumnIndex == dataGridView1.Columns["DeleteEmployee"].Index)
+            //    {
+            //        //Remove the employee from the list
+            //        inventory.Remove(tempCar);
+            //        //or
+            //        //dataGridView1.Rows.Remove(dataGridView1.Rows[e.RowIndex]);
+            //    }
+            //}
         }
 
         /// <summary>
