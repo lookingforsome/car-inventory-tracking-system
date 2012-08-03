@@ -38,7 +38,7 @@
             this.tbx_vin = new System.Windows.Forms.TextBox();
             this.tbx_price = new System.Windows.Forms.TextBox();
             this.tbx_year = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.tbx_description = new System.Windows.Forms.TextBox();
             this.cmb_model = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -129,13 +129,13 @@
             this.tbx_year.Size = new System.Drawing.Size(121, 22);
             this.tbx_year.TabIndex = 10;
             // 
-            // textBox5
+            // tbx_description
             // 
-            this.textBox5.Location = new System.Drawing.Point(89, 150);
-            this.textBox5.Multiline = true;
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(288, 63);
-            this.textBox5.TabIndex = 11;
+            this.tbx_description.Location = new System.Drawing.Point(89, 150);
+            this.tbx_description.Multiline = true;
+            this.tbx_description.Name = "tbx_description";
+            this.tbx_description.Size = new System.Drawing.Size(288, 63);
+            this.tbx_description.TabIndex = 11;
             // 
             // cmb_model
             // 
@@ -151,7 +151,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(788, 688);
             this.Controls.Add(this.cmb_model);
-            this.Controls.Add(this.textBox5);
+            this.Controls.Add(this.tbx_description);
             this.Controls.Add(this.tbx_year);
             this.Controls.Add(this.tbx_price);
             this.Controls.Add(this.tbx_vin);
@@ -183,7 +183,7 @@
         private System.Windows.Forms.TextBox tbx_vin;
         private System.Windows.Forms.TextBox tbx_price;
         private System.Windows.Forms.TextBox tbx_year;
-        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox tbx_description;
         private System.Windows.Forms.ComboBox cmb_model;
     }
 }
