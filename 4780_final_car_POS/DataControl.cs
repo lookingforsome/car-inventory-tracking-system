@@ -38,11 +38,11 @@ static class DataControl
                 for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
                 {
                     //retrieve the inventory item's information given the inventory ID
-                    sqlQuery = "SELECT * FROM Inventory WHERE InventoryKey = " + ds.Tables[0].Rows[x][0].ToString() + ";";
-                    ds2 = da.ExecuteSQLStatement(sqlQuery, ref iRet2); 
+                    sqlQuery = "SELECT * FROM Inventory WHERE VIN = '" + ds.Tables[0].Rows[x][0].ToString() + "';";
+                    ds2 = da.ExecuteSQLStatement(sqlQuery, ref iRet2);
 
-                   // Car tempInvoiceItem = new Car(Convert.ToInt32(ds2.Tables[0].Rows[x][1].ToString()), Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()), Convert.ToDecimal(ds2.Tables[0].Rows[x][2].ToString()));
-                    //invoiceItems.Add(tempInvoiceItem);
+                    Car tempInvoiceItem = new Car(Convert.ToInt32(ds2.Tables[0].Rows[x][1].ToString()), Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()), Convert.ToDecimal(ds2.Tables[0].Rows[x][2].ToString()), ds2.Tables[0].Rows[x][0].ToString(), ds2.Tables[0].Rows[x][5].ToString()));
+                    invoiceItems.Add(tempInvoiceItem);
                 }
             }
             return invoiceItems;
@@ -163,13 +163,13 @@ static class DataControl
                     {
                         foreach (var item in invoiceItems)
                         {
-                            //sqlQuery = "INSERT INTO InvoiceItems (InventoryKey, InvoiceKey) VALUES (" + item.inventoryKey + ", " + ds.Tables[0].Rows[0][0].ToString() + ")";
-                            //result = da.ExecuteNonQuery(sqlQuery);
+                            sqlQuery = "INSERT INTO InvoiceItems (VIN, InvoiceKey) VALUES (" + item.vin + ", " + ds.Tables[0].Rows[0][0].ToString() + ")";
+                            result = da.ExecuteNonQuery(sqlQuery);
 
-                            //if (result != 1)
-                            //{
-                            //    insertErrors++;
-                            //}
+                            if (result != 1)
+                            {
+                                insertErrors++;
+                            }
                         }
 
                         if (insertErrors == 0)
@@ -244,13 +244,13 @@ static class DataControl
                     {
                         foreach (var item in invoiceItems)
                         {
-                            //sqlQuery = "INSERT INTO InvoiceItems (InventoryKey, InvoiceKey) VALUES (" + item.inventoryKey + ", " + invoiceID + ")";
-                            //result = da.ExecuteNonQuery(sqlQuery);
+                            sqlQuery = "INSERT INTO InvoiceItems (VIN, InvoiceKey) VALUES (" + item.vin + ", " + invoiceID + ")";
+                            result = da.ExecuteNonQuery(sqlQuery);
 
-                            //if (result != 1)
-                            //{
-                            //    updateErrors++;
-                            //}
+                            if (result != 1)
+                            {
+                                updateErrors++;
+                            }
                         }
 
                         if (updateErrors == 0)
@@ -338,9 +338,9 @@ static class DataControl
     /// Method deletes and invoice item from an invoice in the database
     /// </summary>
     /// <param name="invoiceID">invoice ID number</param>
-    /// <param name="inventoryID">inventory item ID number</param>
+    /// <param name="vin">item ID vin number</param>
     /// <returns>true if successful, false otherwise</returns>
-    public static bool DeleteInvoiceItem(int invoiceID, int inventoryID)
+    public static bool DeleteInvoiceItem(int invoiceID, string vin)
     {
         try
         {
@@ -348,7 +348,7 @@ static class DataControl
             int result = 0;                           // Represents whether a database query was successful
 
             // SQL Query to the database to delete the given invoice item from the invoice
-            string sqlQuery = "DELETE FROM InvoiceItems WHERE InvoiceKey = " + invoiceID + " AND InventoryKey = " + inventoryID + ";";
+            string sqlQuery = "DELETE FROM InvoiceItems WHERE InvoiceKey = " + invoiceID + " AND VIN = '" + vin + "';";
             result = da.ExecuteNonQuery(sqlQuery);
 
             //check if the deletion was successful
@@ -365,11 +365,12 @@ static class DataControl
     /// <summary>
     /// Method adds an inventory item to the database
     /// </summary>
-    /// <param name="model">the vehicle's model ID number</param>
+    /// <param name="vin">the vin number of the vehicle</param>
+    /// <param name="modelKey">the vehicle's model ID number</param>
     /// <param name="year">the vehicle's year</param>
     /// <param name="cost">the vehicle's cost</param>
     /// <returns>true if successful, false otherwise</returns>
-    public static bool AddInventoryItem(int modelKey, int year, decimal cost)
+    public static bool AddInventoryItem(string vin, int modelKey, int year, decimal cost)
     {
         try
         {
@@ -377,7 +378,7 @@ static class DataControl
             int result = 0;                           // Represents whether the database query was successful
 
             // SQL Query to the database to add the new inventory item
-            string sqlQuery = "INSERT INTO Inventory (ModelKey, Price, VehicleYear) VALUES (" + modelKey + ", " + cost + ", " + year + ");";
+            string sqlQuery = "INSERT INTO Inventory (VIN, ModelKey, Price, VehicleYear) VALUES ('"+ vin + "'," + modelKey + ", " + cost + ", " + year + ");";
             result = da.ExecuteNonQuery(sqlQuery);
 
             //check to see if the insert was successful
@@ -394,12 +395,12 @@ static class DataControl
     /// <summary>
     /// Method updates an inventory item in the database
     /// </summary>
-    /// <param name="inventoryID">the inventory ID number</param>
+    /// <param name="vin">the vehicle's vin number</param>
     /// <param name="model">the vehicle's model ID number</param>
     /// <param name="year">the vehicle's year</param>
     /// <param name="cost">the cost of the vehicle</param>
     /// <returns>true if successful, false otherwise</returns>
-    public static bool EditInventoryItem(int inventoryID, int model, int year, decimal cost)
+    public static bool EditInventoryItem(string vin, int model, int year, decimal cost)
     {
         try
         {
@@ -407,7 +408,7 @@ static class DataControl
             int result = 0;                         // Represents whether the query to the database was successful
 
             // SQL Query to the database to update the given inventory item
-            string sqlQuery = "UPDATE Inventory SET ModelKey = " + model + ", SET Price = " + cost + ", SET VehicleYear = " + year + " WHERE InventoryKey = " + inventoryID + ";";
+            string sqlQuery = "UPDATE Inventory SET ModelKey = " + model + ", SET Price = " + cost + ", SET VehicleYear = " + year + " WHERE VIN = '" + vin + "';";
             result = da.ExecuteNonQuery(sqlQuery);
 
             //check to see if the update was successful
@@ -425,10 +426,10 @@ static class DataControl
     /// Method attempts to delete an inventory item, 
     /// but only deletes it if there are no current invoices containing this inventory item.
     /// </summary>
-    /// <param name="inventoryID">the inventory id number</param>
+    /// <param name="vin">the vin number of the vehicle</param>
     /// <param name="invoiceIDs">the invoice ids that contain this item</param>
     /// <returns>true if successful, false if an invoice contains the item or deletion failure</returns>
-    public static bool DeleteInventoryItem(int inventoryID, ref string invoiceIDs)
+    public static bool DeleteInventoryItem(string vin, ref string invoiceIDs)
     {
         try
         {
@@ -439,7 +440,7 @@ static class DataControl
 
             // SQL Query to the database to see if there are any invoices with this item, if so return false and the invoice ids that contain the item.
             // Otherwise delete the item.
-            string sqlQuery = "SELECT DISTINCT InvoiceKey FROM InvoiceItems WHERE InventoryKey = " + inventoryID + ";";
+            string sqlQuery = "SELECT DISTINCT InvoiceKey FROM InvoiceItems WHERE VIN = '" + vin + "';";
             ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
 
             if (iRet > 0)
@@ -461,7 +462,7 @@ static class DataControl
             else
             {
                 //Delete the item from the database
-                sqlQuery = "DELETE FROM Inventory WHERE InventoryKey = " + inventoryID + ";";
+                sqlQuery = "DELETE FROM Inventory WHERE VIN = '" + vin + "';";
                 result = da.ExecuteNonQuery(sqlQuery);
 
                 //check to see if the deletion was successful
@@ -490,7 +491,7 @@ static class DataControl
             DataSet ds;                             // Dataset to hold results from database queries
 
             //SQL Query to the database to search for all current inventory items, then return them in a dataset.
-            string sqlQuery = "SELECT InventoryKey, VehicleYear + ' ' + Make + ' ' + ModelName AS InventoryName " + 
+            string sqlQuery = "SELECT Inventory.VIN, FORMAT(VehicleYear, '0000') + ' ' + MakeName + ' ' + ModelName AS InventoryName " + 
                               "FROM Inventory, Models, Makes " +
                               "WHERE Inventory.ModelKey = Models.ModelKey AND Models.MakeKey = Makes.MakeKey;";
 
@@ -507,9 +508,9 @@ static class DataControl
     /// Retrieves an inventory item's cost from the database 
     /// given a certain inventory ID.
     /// </summary>
-    /// <param name="inventoryID">the inventory ID number</param>
+    /// <param name="vin">the vin number of the vehicle</param>
     /// <returns>the inventory item's cost; format: $00.00</returns>
-    public static string getInventoryItemCost(int inventoryID)
+    public static string getInventoryItemCost(string vin)
     {
         try
         {
@@ -517,7 +518,7 @@ static class DataControl
             string cost;                            //string to hold the returned item's cost from the database
 
             //SQL Query to the database to retrieve the given inventory item's cost, then return it.
-            string sqlQuery = "SELECT Price FROM Inventory WHERE InventoryKey = " + inventoryID + ";";
+            string sqlQuery = "SELECT Price FROM Inventory WHERE VIN = '" + vin + "';";
             cost = da.ExecuteScalarSQL(sqlQuery);
             
             return cost;
