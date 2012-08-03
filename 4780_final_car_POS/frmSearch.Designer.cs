@@ -56,6 +56,7 @@
 			this.InvoiceDataGridView.Name = "InvoiceDataGridView";
 			this.InvoiceDataGridView.Size = new System.Drawing.Size(683, 294);
 			this.InvoiceDataGridView.TabIndex = 1;
+			this.InvoiceDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.InvoiceDataGridView_CellClick);
 			// 
 			// cmbInvoiceNumber
 			// 
@@ -64,6 +65,7 @@
 			this.cmbInvoiceNumber.Name = "cmbInvoiceNumber";
 			this.cmbInvoiceNumber.Size = new System.Drawing.Size(121, 21);
 			this.cmbInvoiceNumber.TabIndex = 2;
+			this.cmbInvoiceNumber.SelectedIndexChanged += new System.EventHandler(this.cmbInvoiceNumber_SelectedIndexChanged);
 			// 
 			// lblInvoiceNumber
 			// 
@@ -77,7 +79,7 @@
 			// lblInvoiceDate
 			// 
 			this.lblInvoiceDate.AutoSize = true;
-			this.lblInvoiceDate.Location = new System.Drawing.Point(317, 50);
+			this.lblInvoiceDate.Location = new System.Drawing.Point(308, 50);
 			this.lblInvoiceDate.Name = "lblInvoiceDate";
 			this.lblInvoiceDate.Size = new System.Drawing.Size(71, 13);
 			this.lblInvoiceDate.TabIndex = 5;
@@ -86,7 +88,7 @@
 			// cmbInvoiceDate
 			// 
 			this.cmbInvoiceDate.FormattingEnabled = true;
-			this.cmbInvoiceDate.Location = new System.Drawing.Point(394, 47);
+			this.cmbInvoiceDate.Location = new System.Drawing.Point(385, 47);
 			this.cmbInvoiceDate.Name = "cmbInvoiceDate";
 			this.cmbInvoiceDate.Size = new System.Drawing.Size(121, 21);
 			this.cmbInvoiceDate.TabIndex = 4;

@@ -19,6 +19,13 @@ namespace _4780_final_car_POS
 		/// </summary>
 		dataValidator dv = new dataValidator();
 
+		clsDataAccess da = new clsDataAccess();
+
+		/// <summary>
+		/// Global InvoiceKey to be used by the Invoice retrieve screen/class.
+		/// </summary>
+		public int PassedInvoiceKey { get; set; }
+
 		#endregion
 
 		public frmSearch()
@@ -31,10 +38,8 @@ namespace _4780_final_car_POS
 
 			//Create 4 columns to be displayed in the DataGridView
 			DataGridViewTextBoxColumn InvoiceKeyColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			DataGridViewTextBoxColumn CustomerFirstNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			DataGridViewTextBoxColumn CustomerLastNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			DataGridViewTextBoxColumn SalesPersonFirstName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			DataGridViewTextBoxColumn SalesPersonLastName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			DataGridViewTextBoxColumn CustomerNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			DataGridViewTextBoxColumn SalesPersonName = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			DataGridViewTextBoxColumn PurchaseDateColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			DataGridViewTextBoxColumn CostColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			DataGridViewButtonColumn SelectInvoiceButtonColumn = new System.Windows.Forms.DataGridViewButtonColumn();
@@ -48,31 +53,23 @@ namespace _4780_final_car_POS
 			InvoiceKeyColumn.HeaderText = "Invoice ID";
 			InvoiceKeyColumn.Name = "InvoiceID";
 
-			CustomerFirstNameColumn.DataPropertyName = "customerName";
-			CustomerFirstNameColumn.HeaderText = "Full Name";
-			CustomerFirstNameColumn.Name = "customerName";
+			CustomerNameColumn.DataPropertyName = "customerName";
+			CustomerNameColumn.HeaderText = "Customer Full Name";
+			CustomerNameColumn.Name = "customerName";
 			//CustomerFirstNameColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
 			//CustomerFirstNameColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
 
-			CustomerLastNameColumn.DataPropertyName = "LastName";
-			CustomerLastNameColumn.HeaderText = "Last Name";
-			CustomerLastNameColumn.Name = "LastName";
+			SalesPersonName.DataPropertyName = "salesPersonName";
+			SalesPersonName.HeaderText = "Sales Person Name";
+			SalesPersonName.Name = "salesPersonName";
 
-			SalesPersonFirstName.DataPropertyName = "customerName";
-			SalesPersonFirstName.HeaderText = "SalesPerson First Name";
-			SalesPersonFirstName.Name = "SalesPersonFirstName";
+			PurchaseDateColumn.DataPropertyName = "PurchaseDate";
+			PurchaseDateColumn.HeaderText = "Purchase Date";
+			PurchaseDateColumn.Name = "PurchaseDate";
 
-			SalesPersonLastName.DataPropertyName = "LastName";
-			SalesPersonLastName.HeaderText = "Last Name";
-			SalesPersonLastName.Name = "LastName";
-
-			PurchaseDateColumn.DataPropertyName = "LastName";
-			PurchaseDateColumn.HeaderText = "Last Name";
-			PurchaseDateColumn.Name = "LastName";
-
-			CostColumn.DataPropertyName = "LastName";
-			CostColumn.HeaderText = "Last Name";
-			CostColumn.Name = "LastName";
+			CostColumn.DataPropertyName = "Cost";
+			CostColumn.HeaderText = "Total Cost";
+			CostColumn.Name = "Cost";
 
 			SelectInvoiceButtonColumn.HeaderText = "Select Invoice";
 			SelectInvoiceButtonColumn.Name = "SelectInvoice";
@@ -82,40 +79,37 @@ namespace _4780_final_car_POS
 
 			//Add the columns to the DataGridView
 			InvoiceDataGridView.Columns.Add(InvoiceKeyColumn);
-			InvoiceDataGridView.Columns.Add(CustomerFirstNameColumn);
-			InvoiceDataGridView.Columns.Add(CustomerLastNameColumn);
-			InvoiceDataGridView.Columns.Add(SalesPersonFirstName);
-			InvoiceDataGridView.Columns.Add(SalesPersonLastName);
+			InvoiceDataGridView.Columns.Add(CustomerNameColumn);
+			InvoiceDataGridView.Columns.Add(SalesPersonName);
 			InvoiceDataGridView.Columns.Add(PurchaseDateColumn);
 			InvoiceDataGridView.Columns.Add(CostColumn);
 			InvoiceDataGridView.Columns.Add(SelectInvoiceButtonColumn);
-
-			//Create three employee objects and set their data
-			//Employee emp1 = new Employee();
-			//emp1.ID = 123;
-			//emp1.FirstName = "Shawn";
-			//emp1.LastName = "Cowder";
-
-			//Employee emp2 = new Employee();
-			//emp2.ID = 456;
-			//emp2.FirstName = "Melissa";
-			//emp2.LastName = "Cowder";
-
-			//Employee emp3 = new Employee();
-			//emp3.ID = 789;
-			//emp3.FirstName = "John";
-			//emp3.LastName = "Smith";
-
-			////Add the employee objects to the BindingList
-			//Invoices.Add(emp1);
-			//Invoices.Add(emp2);
-			//Invoices.Add(emp3);
 
 			//Don't generate columns automatically
 			InvoiceDataGridView.AutoGenerateColumns = false;
 
 			//Set the DataSource for the DataGridView
 			InvoiceDataGridView.DataSource = Invoices;
+
+
+
+			//instantiate the Invoice Number dropdown
+			da = new clsDataAccess(); //Data Access object to query database
+			DataSet ds; //Data set to store results of SQL statement
+			string sSQL = "SELECT DISTINCT InvoiceKey FROM Invoices"; //SQL statement to execute
+
+			int iTotalResults = 0;  //Number of results that came back from SQL statement
+
+			//Run the statement and store the result into the dataset
+			ds = da.ExecuteSQLStatement(sSQL, ref iTotalResults);
+
+			//For each row (flight) in the data set, add a new item to the combo box
+			foreach (DataRow dr in ds.Tables[0].Rows)
+				cmbInvoiceNumber.Items.Add(dr["InvoiceKey"].ToString());
+
+			//instantiate the cost dropdown
+
+			//instantiate the date dropdown.
 		}
 
 		#region Button Methods
@@ -139,5 +133,47 @@ namespace _4780_final_car_POS
 		}
 
 		#endregion
+
+		private void cmbInvoiceNumber_SelectedIndexChanged(object sender, EventArgs e)
+		{	
+			//InvoiceDataGridView.CurrentRow.DataBoundItem;
+
+
+			InvoiceDataGridView.DataSource = DataControl.getInvoiceByID(3);
+		}
+
+
+		private void InvoiceDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+		{
+			try
+			{
+				//Grab the invoice record that was clicked on
+				Invoice invTemp = (Invoice)InvoiceDataGridView.Rows[e.RowIndex].DataBoundItem;
+
+				//Make sure there is an Invoice
+				if (invTemp != null)
+				{
+					//Determine if the "Select This Invoice" button was clicked
+					if (e.ColumnIndex == InvoiceDataGridView.Columns["InvoiceKeyColumn"].Index)
+					{
+						//Here's where I throw the invoice key to the Create invoice
+						int InvoiceKey = invTemp.InvoiceKey;
+						this.Hide();
+					}
+					else
+					{
+						////A row was selected so display the employee's information
+						//lblID.Text = invTemp.ID.ToString();
+						//lblFirstName.Text = invTemp.FirstName;
+						//lblLastName.Text = invTemp.LastName;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(MethodInfo.GetCurrentMethod().DeclaringType.Name + "." + MethodInfo.GetCurrentMethod().Name + " -> " + ex.Message);
+			}
+		}
+
 	}
 }
