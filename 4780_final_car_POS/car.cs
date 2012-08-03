@@ -7,7 +7,7 @@ using System.Text;
     {
         #region constructor
        
-            public Car(int passedModel, int passedYear, decimal passedPrice, string passedVin, string passedDescription)
+            public Car(string passedModel, int passedYear, decimal passedPrice, string passedVin, string passedDescription)
             {
                 //sets the attributes of the car
                 model = passedModel;
@@ -25,7 +25,7 @@ using System.Text;
             /// <summary>
             /// Stores the model of the car
             /// </summary>
-            public int model { get; set; }
+            public string model { get; set; }
 
             /// <summary>
             /// stores the year of the car

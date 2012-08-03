@@ -19,11 +19,16 @@ namespace _4780_final_car_POS
         /// </summary>
         dataValidator dv = new dataValidator();
 
+        BindingList<Car> inventory = new BindingList<Car>();
+
         #endregion
 
         public frmInventory()
         {
             InitializeComponent();
+
+            //sets the binding list
+            inventory = DataControl.getCarList();
 
             //Create 4 columns to be displayed in the DataGridView
             DataGridViewTextBoxColumn Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -31,6 +36,8 @@ namespace _4780_final_car_POS
             DataGridViewTextBoxColumn Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            DataGridViewButtonColumn Column6 = new System.Windows.Forms.DataGridViewButtonColumn();
+            DataGridViewButtonColumn Column7 = new System.Windows.Forms.DataGridViewButtonColumn();
 
             //Add the columns to the DataGridView
             dataGridView1.Columns.Add(Column1);
@@ -38,6 +45,8 @@ namespace _4780_final_car_POS
             dataGridView1.Columns.Add(Column3);
             dataGridView1.Columns.Add(Column4);
             dataGridView1.Columns.Add(Column5);
+            dataGridView1.Columns.Add(Column6);
+            dataGridView1.Columns.Add(Column7);
 
             //Set the column properties
             Column1.DataPropertyName = "VIN";
@@ -55,13 +64,60 @@ namespace _4780_final_car_POS
             Column5.DataPropertyName = "Description";
             Column5.HeaderText = "Description";
 
+            Column6.HeaderText = "Edit";
+            Column6.Name = "Edit";
+            Column6.Text = "Edit";
+            Column6.UseColumnTextForButtonValue = true;
+            Column6.Width = 100;
+
+            Column7.HeaderText = "Delete";
+            Column7.Name = "Delete";
+            Column7.Text = "Delete";
+            Column7.UseColumnTextForButtonValue = true;
+            Column7.Width = 100;
+
             dataGridView1.AutoGenerateColumns = false;
 
-            dataGridView1.DataSource = DataControl.getCarList();
+            dataGridView1.DataSource = inventory;
         }
 
         #region Button Methods
-        
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            //extracts the car that corresponds to the row that was clicked
+            Car tempCar = (Car)dataGridView1.Rows[e.RowIndex].DataBoundItem;
+            
+            //makes sure that there is a car
+            if (tempCar != null)
+            {
+                //creates temp button for the sender
+                Button tempButton = (Button)sender;
+                if (tempButton.Text == "Delete")
+                {
+                    //Deletes the employee from the list
+                    inventory.Remove(tempCar);
+                }
+                if (tempButton.Text == "Edit")
+                {
+
+                }
+            }
+            
+            //Make sure there is an employee
+            if (emp != null)
+            {
+                //Determine if the "Delete" button was clicked
+                if (e.ColumnIndex == dataGridView1.Columns["DeleteEmployee"].Index)
+                {
+                    //Remove the employee from the list
+                    inventory.Remove(tempCar);
+                    //or
+                    //dataGridView1.Rows.Remove(dataGridView1.Rows[e.RowIndex]);
+                }
+            }
+        }
+
         /// <summary>
         /// Handles the cancel buttons functionality, returns the user to the main menu screen.
         /// </summary>
@@ -81,5 +137,6 @@ namespace _4780_final_car_POS
         }
 
         #endregion
+
     }
 }

@@ -782,8 +782,8 @@ static class DataControl
                 //go through the dataset adding the invoices
                 for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
                 {
-                    //Car(int passedModel, int passedYear, decimal passedPrice, string passedVin, string passedDescription)
-                    Car tempCar = new Car(int.Parse(ds.Tables[0].Rows[x][0].ToString()), int.Parse(ds.Tables[0].Rows[x][3].ToString()), decimal.Parse(ds.Tables[0].Rows[x][2].ToString()), ds.Tables[0].Rows[x][1].ToString(), ds.Tables[0].Rows[x][4].ToString());
+                    //Car(string passedModel, int passedYear, decimal passedPrice, string passedVin, string passedDescription)
+                    Car tempCar = new Car(ds.Tables[0].Rows[x][0].ToString(), Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()), Convert.ToDecimal(ds.Tables[0].Rows[x][2].ToString()), ds.Tables[0].Rows[x][1].ToString(), ds.Tables[0].Rows[x][4].ToString());
                     cars.Add(tempCar);
                 }
             }
