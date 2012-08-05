@@ -10,6 +10,8 @@ using System.Data;
 /// </summary>
 static class DataControl
 {
+    public static int selectedInvoiceKey {get; set;}
+
     /// <summary>
     /// Method retrieves the invoice's items from the database
     /// </summary>
@@ -41,7 +43,49 @@ static class DataControl
                     sqlQuery = "SELECT * FROM Inventory WHERE VIN = '" + ds.Tables[0].Rows[x][0].ToString() + "';";
                     ds2 = da.ExecuteSQLStatement(sqlQuery, ref iRet2);
 
-                    Car tempInvoiceItem = new Car(Convert.ToInt32(ds2.Tables[0].Rows[x][1].ToString()), Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()), Convert.ToDecimal(ds2.Tables[0].Rows[x][2].ToString()), ds2.Tables[0].Rows[x][0].ToString(), ds2.Tables[0].Rows[x][5].ToString()));
+                    Car tempInvoiceItem = new Car(ds2.Tables[0].Rows[x][1].ToString(), Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()), Convert.ToDecimal(ds2.Tables[0].Rows[x][2].ToString()), ds2.Tables[0].Rows[x][0].ToString(), ds2.Tables[0].Rows[x][5].ToString());
+                    invoiceItems.Add(tempInvoiceItem);
+                }
+            }
+            return invoiceItems;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+    /// <summary>
+    /// Method retrieves the invoice's items from the database and puts them into a Binding List
+    /// </summary>
+    /// <param name="id">invoice ID number</param>
+    /// <returns>Binding List of car objects that represent the invoice's items</returns>
+    public static BindingList<Car> getCarsBindingListByInvoiceID(int invoiceId)
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            int iRet2 = 0;                          // Represents the number of rows from the query to retrieve an inventory item
+            DataSet ds;                             // Dataset to hold results from database queries
+            DataSet ds2;                            // Dataset to hold a specific inventory item's information
+
+            //SQL Query to the database to search for invoiceItems given a certain invoiceID
+            string sqlQuery = "SELECT * FROM InvoiceItems WHERE InvoiceKey = " + invoiceId + ";";
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+            //create a binding list of all the invoiceItems, if there is an invoice found, add the invoice's items to the list
+            BindingList<Car> invoiceItems = new BindingList<Car>();
+
+            if (iRet > 0)
+            {
+                //go through the dataset adding the invoice's items
+                for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
+                {
+                    //retrieve the inventory item's information given the inventory ID
+                    sqlQuery = "SELECT * FROM Inventory WHERE VIN = '" + ds.Tables[0].Rows[x][0].ToString() + "';";
+                    ds2 = da.ExecuteSQLStatement(sqlQuery, ref iRet2);
+
+                    Car tempInvoiceItem = new Car(ds2.Tables[0].Rows[x][1].ToString(), Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()), Convert.ToDecimal(ds2.Tables[0].Rows[x][2].ToString()), ds2.Tables[0].Rows[x][0].ToString(), ds2.Tables[0].Rows[x][5].ToString());
                     invoiceItems.Add(tempInvoiceItem);
                 }
             }
@@ -120,28 +164,19 @@ static class DataControl
     /// <param name="customerKey">ID of the customer</param>
     /// <param name="purchaseDate">Date of purchase</param>
     /// <param name="invoiceItems">List of all the invoice items objects (car objects)</param>
+    /// <param name="totalCost">the accumulated total cost of the invoice items for the given invoice</param>
     /// <returns>true if successful, false otherwise</returns>
-    public static bool AddInvoice(int salesPersonKey, int customerKey, string purchaseDate, List<Car> invoiceItems)
+    public static bool AddInvoice(int salesPersonKey, int customerKey, string purchaseDate, List<Car> invoiceItems, decimal totalCost)
     {
         try
         {
             clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
             int result = 0;                         // Represents whether the query was successful
             int iRet = 0;                           // Represents how many rows are returned from the query
-            decimal totalCost = 0;                  // Represents the invoice total cost
             DataSet ds;                             // Dataset to hold results from database queries
             int insertErrors = 0;                   // Represents the number of insert errors when inserting invoice items
 
             DateTime dtPurchaseDate = DateTime.Parse(purchaseDate);     //converted purchase date to a date time object
-
-            //if there are invoice items to add calculate the total cost
-            if (invoiceItems.Count > 0)
-            {
-                foreach (var item in invoiceItems)
-                {
-                    totalCost += item.price;
-                }
-            }
 
             // SQL Query to the database to insert an invoice
             string sqlQuery = "INSERT INTO Invoices (TotalCost, CustomerKey, SalesmenKey, PurchaseDate) VALUES (" + totalCost + ", " + customerKey + ", " + salesPersonKey + ", '" + dtPurchaseDate.ToString() + "');";
@@ -202,26 +237,17 @@ static class DataControl
     /// <param name="customerKey">ID of the customer</param>
     /// <param name="purchaseDate">Date of purchase</param>
     /// <param name="invoiceItems">List of invoice items objects (car objects)</param>
+    /// <param name="totalCost">the accumulated total cost of the invoice items for the given invoice</param>
     /// <returns>true if successful, false otherwise</returns>
-    public static bool EditInvoice(int invoiceID, int salesPersonKey, int customerKey, string purchaseDate, List<Car> invoiceItems)
+    public static bool EditInvoice(int invoiceID, int salesPersonKey, int customerKey, string purchaseDate, List<Car> invoiceItems, decimal totalCost)
     {
         try
         {
             clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
             int result = 0;                         // Represents whether the query was successful
-            decimal totalCost = 0;                  // Represents the invoice total cost
             int updateErrors = 0;                   // Represents the number of update errors when updating invoice items
 
             DateTime dtPurchaseDate = DateTime.Parse(purchaseDate);     //converted purchase date to a date time object
-
-            //if there are invoice items to update calculate the total cost
-            if (invoiceItems.Count > 0)
-            {
-                foreach (var item in invoiceItems)
-                {
-                    totalCost += item.price;
-                }
-            }
 
             // SQL Query to the database to update the given invoice
             string sqlQuery = "UPDATE Invoices SET TotalCost = " + totalCost + ", SET CustomerKey = "
@@ -757,30 +783,78 @@ static class DataControl
             throw ex;
         }
     }
+    /// <summary>
+    /// Retrieves all of the customers and their IDs from the database.
+    /// </summary>
+    /// <returns>all the customers and their IDs</returns>
+    public static DataSet getCustomers()
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
 
-    //public static string getModels()
-    //{
-    //    try
-    //    {
-    //        //clsDataAccess da= new clsDataAccess();     // Object that connects to the database and executes queries
-    //        int iRet = 0;                               //stores the number of rows returned
+            //SQL Query to the database to search for all customers, then return them in a dataset.
+            string sqlQuery = "SELECT CustomerKey, FirstName + ' ' + LastName AS CustomerName FROM Customers;";
 
-    //        //creates a dataset to use
-    //        DataSet ds;
-    //        //query to populate the dataset
-    //        string sqlQuery = "SELECT Models.ModelKey, Models.ModelName FROM Models";
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
 
-    //        //executes the query and puts it in the dataset
-    //        return ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
-    //        //DataSet ds;
-    //        //return ds;
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        throw ex;
-    //    }
-        
-    //}
+            return ds;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+    /// <summary>
+    /// Retrieves all of the sales people and their IDs from the database.
+    /// </summary>
+    /// <returns>all the sales people and their IDs</returns>
+    public static DataSet getSalesPersons()
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
+
+            //SQL Query to the database to search for all sales people, then return them in a dataset.
+            string sqlQuery = "SELECT SalesmanKey, FirstName + ' ' + LastName AS SalesName FROM Salesmen;";
+
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+            return ds;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+    /// <summary>
+    /// Retrieves the current model names from the database and their model keys. 
+    /// </summary>
+    /// <returns>All the current model names and their keys</returns>
+    public static DataSet getModels()
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
+
+            //SQL Query to the database to search for all current Models, then return them in a dataset.
+            string sqlQuery = "SELECT Models.ModelKey, Models.ModelName FROM Models";
+
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+            return ds;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
 
     //Michael Meyer
     /// <summary>
@@ -814,6 +888,36 @@ static class DataControl
                 }
             }
             return cars;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+    /// <summary>
+    /// Retrieves a specific car's details from the databases inventory.
+    /// </summary>
+    /// <param name="vin">the vehicle's vin number</param>
+    /// <returns>the requested car object; null if the car searched for wasn't found.</returns>
+    public static Car getCarByVIN(string vin)
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
+
+            // SQL Query to the database to retrieve the given car from inventory
+            string sqlQuery = "SELECT VIN, Models.ModelName, Price, VehicleYear, Description FROM Inventory, Models WHERE Inventory.ModelKey = Models.ModelKey AND VIN = '" + vin + "';";
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+            //create the customer's full name from the database's results
+            if (iRet > 0)
+            {
+                return new Car(ds.Tables[0].Rows[0][1].ToString(), Convert.ToInt32(ds.Tables[0].Rows[0][3].ToString()), Convert.ToDecimal(ds.Tables[0].Rows[0][2].ToString()), ds.Tables[0].Rows[0][0].ToString(), ds.Tables[0].Rows[0][4].ToString());
+            }
+            else
+                return null;
         }
         catch (Exception ex)
         {
