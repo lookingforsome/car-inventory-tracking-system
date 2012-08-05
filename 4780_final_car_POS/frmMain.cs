@@ -29,7 +29,7 @@ namespace _4780_final_car_POS
         /// <summary>
         /// Represents the data sent back from the database from queries.
         /// </summary>
-        //DataSet ds;
+        DataSet ds;
         /// <summary>
         /// Represents whether the user is creating an invoice or not.
         /// </summary>
@@ -43,9 +43,21 @@ namespace _4780_final_car_POS
         /// </summary>
         bool result = false;
         /// <summary>
-        /// Represents a newly created invoice, or a read-only editable/delete worthy invoice.  Used to populate a data viewer.
+        /// Represents the calculated total cost for the invoice.
+        /// </summary>
+        decimal totalCost = 0;
+        /// <summary>
+        /// Represents a newly created invoice's items, or read-only editable/delete worthy invoice's items.  Used to populate a data grid viewer.
+        /// </summary>
+        BindingList<Car> invoiceCars = new BindingList<Car>();
+        /// <summary>
+        /// Represents a newly created invoice, or a read-only editable/delete worthy invoice.  Used to populate the invoice form fields.
         /// </summary>
         BindingList<Invoice> invoice = new BindingList<Invoice>();
+        /// <summary>
+        /// Represents the list of invoice items added to a given invoice
+        /// </summary>
+        List<Car> invoiceItems = new List<Car>();
 
         #endregion
 
@@ -59,69 +71,79 @@ namespace _4780_final_car_POS
             {
                 InitializeComponent();
 
+                //Initialize the Data Grid View and create it's view definition
+
                 //Create 4 columns to be displayed in the DataGridView
-                //DataGridViewTextBoxColumn Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-                //DataGridViewTextBoxColumn Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-                //DataGridViewTextBoxColumn Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-                //DataGridViewButtonColumn Column4 = new System.Windows.Forms.DataGridViewButtonColumn();
+                DataGridViewTextBoxColumn Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+                DataGridViewTextBoxColumn Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+                DataGridViewTextBoxColumn Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+                DataGridViewTextBoxColumn Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+                DataGridViewTextBoxColumn Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+                DataGridViewButtonColumn Column6 = new System.Windows.Forms.DataGridViewButtonColumn();
 
-                ////Set the properties of the columns.
-                ////Note the property "DataPropertyName".  
-                ////The value of this property corresponds to the name of the property in the class Employee.  
-                ////This binds this column to that field in the class.
+                //Set the properties of the columns.
+                //Note the property "DataPropertyName".  
+                //The value of this property corresponds to the name of the property in the class Employee.  
+                //This binds this column to that field in the class.
 
-                //Column1.DataPropertyName = "ID";
-                //Column1.HeaderText = "Employee ID";
-                //Column1.Name = "EmployeeID";
+                Column1.DataPropertyName = "vin";
+                Column1.HeaderText = "VIN #";
+                Column1.Name = "VIN";
+                Column1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
 
-                //Column2.DataPropertyName = "FirstName";
-                //Column2.HeaderText = "First Name";
-                //Column2.Name = "FirstName";
-                //Column2.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-                //Column2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+                Column2.DataPropertyName = "year";
+                Column2.HeaderText = "Year";
+                Column2.Name = "Year";
+                Column2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
 
-                //Column3.DataPropertyName = "LastName";
-                //Column3.HeaderText = "Last Name";
-                //Column3.Name = "LastName";
+                Column3.DataPropertyName = "model";
+                Column3.HeaderText = "Model";
+                Column3.Name = "Model";
+                Column3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+                Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
 
-                //Column4.HeaderText = "Delete Employee";
-                //Column4.Name = "DeleteEmployee";
-                //Column4.Text = "Delete the Employee";
-                //Column4.UseColumnTextForButtonValue = true;
-                //Column4.Width = 200;
+                Column4.DataPropertyName = "price";
+                Column4.HeaderText = "Cost";
+                Column4.Name = "Cost";
+                Column4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
 
-                ////Add the columns to the DataGridView
-                //dataGridView1.Columns.Add(Column1);
-                //dataGridView1.Columns.Add(Column2);
-                //dataGridView1.Columns.Add(Column3);
-                //dataGridView1.Columns.Add(Column4);
+                Column5.DataPropertyName = "description";
+                Column5.HeaderText = "Description";
+                Column5.Name = "Description";
+                Column5.Resizable = System.Windows.Forms.DataGridViewTriState.True;
 
-                ////Create three employee objects and set their data
-                //Employee emp1 = new Employee();
-                //emp1.ID = 123;
-                //emp1.FirstName = "Shawn";
-                //emp1.LastName = "Cowder";
+                Column6.HeaderText = "Delete Invoice Item";
+                Column6.Name = "DeleteInvoiceItem";
+                Column6.Text = "Delete";
+                Column6.UseColumnTextForButtonValue = true;
+                Column6.Width = 200;
 
-                //Employee emp2 = new Employee();
-                //emp2.ID = 456;
-                //emp2.FirstName = "Melissa";
-                //emp2.LastName = "Cowder";
+                //Add the columns to the DataGridView
+                dgvInvoiceItems.Columns.Add(Column1);
+                dgvInvoiceItems.Columns.Add(Column2);
+                dgvInvoiceItems.Columns.Add(Column3);
+                dgvInvoiceItems.Columns.Add(Column4);
+                dgvInvoiceItems.Columns.Add(Column5);
+                dgvInvoiceItems.Columns.Add(Column6);
 
-                //Employee emp3 = new Employee();
-                //emp3.ID = 789;
-                //emp3.FirstName = "John";
-                //emp3.LastName = "Smith";
+                //Don't generate columns automatically
+                dgvInvoiceItems.AutoGenerateColumns = false;
 
-                ////Add the employee objects to the BindingList
-                //lstEmployees.Add(emp1);
-                //lstEmployees.Add(emp2);
-                //lstEmployees.Add(emp3);
+                //disable the grid
+                dgvInvoiceItems.Enabled = false;
 
-                ////Don't generate columns automatically
-                //dataGridView1.AutoGenerateColumns = false;
+                //Populate the sales person and customer drop downs
+                ds = DataControl.getSalesPersons();
 
-                ////Set the DataSource for the DataGridView
-                //dataGridView1.DataSource = lstEmployees;
+                cmbxSalePerson.DataSource = ds.Tables[0];
+                cmbxSalePerson.DisplayMember = "SalesName";
+                cmbxSalePerson.ValueMember = "SalesmanKey";
+
+                ds = DataControl.getCustomers();
+
+                cmbxCustomer.DataSource = ds.Tables[0];
+                cmbxCustomer.DisplayMember = "CustomerName";
+                cmbxCustomer.ValueMember = "CustomerKey";
             }
             catch (Exception ex)
             {
@@ -136,33 +158,37 @@ namespace _4780_final_car_POS
         /// Method handles when a cell has had a click acted upon it.
         /// If delete button has been clicked, the selected invoice item 
         /// row will be removed from the data grid view.
+        /// Also the running total cost for the invoice will be decremented.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void dgvInvoiceItems_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            //Extract the employee that corresponds to the row that was clicked
-            //Employee emp = (Employee)dataGridView1.Rows[e.RowIndex].DataBoundItem;
+            try
+            {
+                //Extract the invoice item that corresponds to the row that was clicked
+                Car invoiceItem = (Car)dgvInvoiceItems.Rows[e.RowIndex].DataBoundItem;
 
-            ////Make sure there is an employee
-            //if (emp != null)
-            //{
-            //    //Determine if the "Delete" button was clicked
-            //    if (e.ColumnIndex == dataGridView1.Columns["DeleteEmployee"].Index)
-            //    {
-            //        //Remove the employee from the list
-            //        lstEmployees.Remove(emp);
-            //        //or
-            //        //dataGridView1.Rows.Remove(dataGridView1.Rows[e.RowIndex]);
-            //    }
-            //    else
-            //    {
-            //        //A row was selected so display the employee's information
-            //        lblID.Text = emp.ID.ToString();
-            //        lblFirstName.Text = emp.FirstName;
-            //        lblLastName.Text = emp.LastName;
-            //    }
-            //}
+                //Make sure there is a car invoice item
+                if (invoiceItem != null)
+                {
+                    //Determine if the "Delete" button was clicked
+                    if (e.ColumnIndex == dgvInvoiceItems.Columns["DeleteInvoiceItem"].Index)
+                    {
+                        //decrement the total cost by subtracting the deleted invoice item's price
+                        totalCost -= invoiceItem.price;
+                        txtTotalCost.Text = totalCost.ToString();
+
+                        //Remove the invoice item from the bound invoice list and in the data grid view
+                        invoiceCars.Remove(invoiceItem);
+                        //dgvInvoiceItems.Rows.Remove(dgvInvoiceItems.Rows[e.RowIndex]);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                dv.HandleError(MethodInfo.GetCurrentMethod().DeclaringType.Name, MethodInfo.GetCurrentMethod().Name, ex.Message);
+            }
         }
 
         #endregion
@@ -182,6 +208,22 @@ namespace _4780_final_car_POS
                 frmSearchWindow = new frmSearch();
                 frmSearchWindow.ShowDialog();
                 this.Show();
+
+                //Populate the invoice fields with the given invoice selected, if there was an invoice selected.
+                if (DataControl.selectedInvoiceKey != 0)
+                {
+
+                    invoice = DataControl.getInvoiceByID(DataControl.selectedInvoiceKey);
+                    cmbxSalePerson.SelectedValue = invoice.ElementAt(1);
+                    cmbxCustomer.SelectedValue = invoice.ElementAt(2);
+                    lblInvoiceNum.Text = invoice.ElementAt(0).ToString();
+                    dtpInvoiceDate.Text = invoice.ElementAt(3).ToString();
+                    txtTotalCost.Text = invoice.ElementAt(4).ToString();
+
+                    //If an invoice was selected from the search form, populate the data grid view with the selected invoice's items.
+                    invoiceCars = DataControl.getCarsBindingListByInvoiceID(DataControl.selectedInvoiceKey);
+                    dgvInvoiceItems.DataSource = invoiceCars;
+                }
             }
             catch (Exception ex)
             {
@@ -202,6 +244,11 @@ namespace _4780_final_car_POS
                 frmInventoryWindow = new frmInventory();
                 frmInventoryWindow.ShowDialog();
                 this.Show();
+
+                //repopulate the item inventory drop down to reflect possible changes
+                cmbxInventory.DataSource = ds.Tables[0];
+                cmbxInventory.DisplayMember = "InventoryName";
+                cmbxInventory.ValueMember = "VIN";
             }
             catch (Exception ex)
             {
@@ -225,36 +272,39 @@ namespace _4780_final_car_POS
         {
             try
             {
-                isCreate = true;    //flag the form that we are creating an invoice
-                
                 //disable necessary invoice option buttons
                 btnDelete.Enabled = false;
                 btnEdit.Enabled = false;
 
                 //re-data bind the item inventory drop down to use current inventory items
-                //ds = DataControl.getInventoryItems();
+                ds = DataControl.getInventoryItems();
 
-                //cmbxInventory.DataSource = ds.Tables[0];
-                //cmbxInventory.DisplayMember = "InventoryName";
-                //cmbxInventory.ValueMember = "InventoryKey";
+                cmbxInventory.DataSource = ds.Tables[0];
+                cmbxInventory.DisplayMember = "InventoryName";
+                cmbxInventory.ValueMember = "VIN";
 
                 //enable form fields
                 dgvInvoiceItems.Enabled = true;
                 dgvInvoiceItems.ReadOnly = false;
                 btnSave.Enabled = true;
                 cmbxInventory.Enabled = true;
+                cmbxCustomer.Enabled = true;
+                cmbxSalePerson.Enabled = true;
                 dtpInvoiceDate.Enabled = true;
                 btnAddItem.Enabled = true;
 
-                //clear form fields out of any possible existing data
+                //clear form fields out of any possible existing data, and set drop downs to their first index.
                 lblInvoiceNum.Text = "";
-                txtItemCost.Text = "";
-                txtTotalCost.Text = "";
+                txtTotalCost.Text = "$0.00";
                 dtpInvoiceDate.Text = "";
                 dgvInvoiceItems.DataSource = null;
+                cmbxCustomer.SelectedIndex = 0;
+                cmbxSalePerson.SelectedIndex = 0;
 
                 //disable access to the menu button
                 menuToolStripMenuItem.Enabled = false;
+
+                isCreate = true;    //flag the form that we are creating an invoice
             }
             catch (Exception ex)
             {
@@ -275,29 +325,31 @@ namespace _4780_final_car_POS
         {
             try
             {
-                isEdit = true;      //flag the form that we are editing an invoice
-
                 //disable necessary invoice option buttons
                 btnDelete.Enabled = false;
                 btnCreate.Enabled = false;
 
                 //re-data bind the item inventory drop down to use current inventory items
-                //ds = DataControl.getInventoryItems();
+                ds = DataControl.getInventoryItems();
 
-                //cmbxInventory.DataSource = ds.Tables[0];
-                //cmbxInventory.DisplayMember = "InventoryName";
-                //cmbxInventory.ValueMember = "InventoryKey";
+                cmbxInventory.DataSource = ds.Tables[0];
+                cmbxInventory.DisplayMember = "InventoryName";
+                cmbxInventory.ValueMember = "VIN";
 
                 //enable form fields
                 dgvInvoiceItems.Enabled = true;
                 dgvInvoiceItems.ReadOnly = false;
                 btnSave.Enabled = true;
                 cmbxInventory.Enabled = true;
+                cmbxSalePerson.Enabled = true;
+                cmbxCustomer.Enabled = true;
                 dtpInvoiceDate.Enabled = true;
                 btnAddItem.Enabled = true;
 
                 //disable access to the menu button
                 menuToolStripMenuItem.Enabled = false;
+
+                isEdit = true;      //flag the form that we are editing an invoice
             }
             catch (Exception ex)
             {
@@ -318,29 +370,37 @@ namespace _4780_final_car_POS
         {
             try
             {
-                //attempt to delete the invoice from the database, check to see if the deletion was successful.  
-                //If not, show an error message.
-                result = DataControl.DeleteInvoice(Convert.ToInt32(lblInvoiceNum.Text));
-                if (result)
-                {
-                    //Disable all necessary form controls and invoice option buttons.
-                    btnEdit.Enabled = false;
-                    btnDelete.Enabled = false;
-                    btnSave.Enabled = false;
-                    btnAddItem.Enabled = false;
-                    dtpInvoiceDate.Enabled = false;
-                    cmbxInventory.Enabled = false;
+                //Confirm that the user truly wants to delete the invoice.
+                DialogResult resultConfirm = MessageBox.Show("Are you sure you want to delete this invoice?", "Delete Invoice?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
-                    //Clear out form fields
-                    lblInvoiceNum.Text = "";
-                    txtItemCost.Text = "";
-                    txtTotalCost.Text = "";
-                    dtpInvoiceDate.Text = "";
-                    dgvInvoiceItems.DataSource = null;
-                }
-                else
+                if (resultConfirm.Equals(DialogResult.Yes))
                 {
-                    MessageBox.Show("The invoice was not successfully deleted, please try again.", "Delete Invoice Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //attempt to delete the invoice from the database, check to see if the deletion was successful.  
+                    //If not, show an error message.
+                    result = DataControl.DeleteInvoice(Convert.ToInt32(lblInvoiceNum.Text));
+                    if (result)
+                    {
+                        //Disable all necessary form controls and invoice option buttons.
+                        btnEdit.Enabled = false;
+                        btnDelete.Enabled = false;
+                        btnSave.Enabled = false;
+                        btnAddItem.Enabled = false;
+                        dtpInvoiceDate.Enabled = false;
+                        cmbxInventory.Enabled = false;
+                        cmbxCustomer.Enabled = false;
+                        cmbxSalePerson.Enabled = false;
+
+                        //Clear out form fields
+                        lblInvoiceNum.Text = "";
+                        txtItemCost.Text = "";
+                        txtTotalCost.Text = "";
+                        dtpInvoiceDate.Text = "";
+                        dgvInvoiceItems.DataSource = null;
+                    }
+                    else
+                    {
+                        MessageBox.Show("The invoice was not successfully deleted, please try again.", "Delete Invoice Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             catch (Exception ex)
@@ -364,7 +424,7 @@ namespace _4780_final_car_POS
         {
             try
             {
-               txtItemCost.Text = "$" + DataControl.getInventoryItemCost(Convert.ToInt32(cmbxInventory.SelectedValue.ToString()));
+                txtItemCost.Text = "$" + DataControl.getInventoryItemCost(cmbxInventory.SelectedItem.ToString());
             }
             catch (Exception ex)
             {
@@ -375,6 +435,7 @@ namespace _4780_final_car_POS
         /// Method handles the Add item button functionality.
         /// When clicked, the item's name from the drop down and 
         /// its respective cost will be added to the data grid view.
+        /// Also, the running total cost for the invoice will be incremented.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -382,7 +443,27 @@ namespace _4780_final_car_POS
         {
             try
             {
+                //Create a new car
+                Car newInvoiceItem = DataControl.getCarByVIN(cmbxInventory.SelectedValue.ToString());
 
+                invoiceCars.Add(newInvoiceItem);
+
+                ////Create a new DataRow from the DataSet
+                //DataRow DR = ds.Tables[0].NewRow();
+
+                ////This value needs to be a unique value
+                //DR[0] = Convert.ToString((ds.Tables[0].Rows.Count + 1));
+
+                ////Add the first and last names to the DataSet
+                //DR[1] = first;
+                //DR[2] = second;
+
+                ////Add the DataRow to the DataSet at the current row index
+                //ds.Tables[0].Rows.InsertAt(DR, dataGridView1.CurrentRow.Index);
+
+                //Accept the new changes to the data grid view 
+                //ds.AcceptChanges();
+                //dgvInvoiceItems.DataSource = invoiceCars;
             }
             catch (Exception ex)
             {
@@ -403,19 +484,26 @@ namespace _4780_final_car_POS
         {
             try
             {
-                result = true;      //temporary for testing
+                //populate the invoice items list with the new values from the data grid view control.
+                populateInvoiceItems();
 
                 if (isCreate)
                 {
-                    //result = DataControl.AddInvoice();
+                    //add the invoice to the database
+                    result = DataControl.AddInvoice(Convert.ToInt32(cmbxSalePerson.SelectedValue.ToString()), Convert.ToInt32(cmbxCustomer.SelectedValue.ToString()), dtpInvoiceDate.Text, invoiceItems, Convert.ToDecimal(txtTotalCost));
+
+                    //if the invoice was added successfully, re-enable invoice option buttons, but make the invoice form fields and data grid view to be read-only.
                     if (result)
                     {
                         dgvInvoiceItems.ReadOnly = true;
                         cmbxInventory.Enabled = false;
+                        cmbxCustomer.Enabled = false;
+                        cmbxSalePerson.Enabled = false;
                         dtpInvoiceDate.Enabled = false;
                         btnAddItem.Enabled = false;
                         btnEdit.Enabled = true;
                         btnDelete.Enabled = true;
+                        btnSave.Enabled = false;
 
                         isCreate = false;   //flag the form that we are done creating an invoice
 
@@ -429,15 +517,21 @@ namespace _4780_final_car_POS
                 }
                 else if (isEdit)
                 {
-                    //result = DataControl.EditInvoice();
+                    //edit the invoice in the database
+                    result = DataControl.EditInvoice(Convert.ToInt32(lblInvoiceNum.Text), Convert.ToInt32(cmbxSalePerson.SelectedValue.ToString()), Convert.ToInt32(cmbxCustomer.SelectedValue.ToString()), dtpInvoiceDate.Text, invoiceItems, Convert.ToDecimal(txtTotalCost.Text));
+
+                    //if the invoice was updated successfully, re-enable the invoice option buttons, but make the invoice form fields and data grid view to be read-only.
                     if (result)
                     {
                         dgvInvoiceItems.ReadOnly = true;
                         cmbxInventory.Enabled = false;
+                        cmbxCustomer.Enabled = false;
+                        cmbxSalePerson.Enabled = false;
                         dtpInvoiceDate.Enabled = false;
                         btnAddItem.Enabled = false;
                         btnCreate.Enabled = true;
                         btnDelete.Enabled = true;
+                        btnSave.Enabled = false;
 
                         isEdit = false;     //flag the form that we are done editing an invoice
 
@@ -453,6 +547,26 @@ namespace _4780_final_car_POS
             catch (Exception ex)
             {
                 dv.HandleError(MethodInfo.GetCurrentMethod().DeclaringType.Name, MethodInfo.GetCurrentMethod().Name, ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// Method populates the invoice items list from what is in the data grid view.
+        /// </summary>
+        /// <returns>List of all the cars in the data grid view control</returns>
+        public void populateInvoiceItems()
+        {
+            //clear out any items in the list before inserting the new or updated list of cars from the data grid.
+            invoiceItems.Clear();
+
+            //iterate through the data grid's rows and insert their cells' info into the car list.
+            for (int i = 0; i < dgvInvoiceItems.RowCount; i++)
+            {
+                Car tempCar = new Car(dgvInvoiceItems.Rows[i].Cells[1].ToString(), Convert.ToInt32(dgvInvoiceItems.Rows[i].Cells[2].ToString()), Convert.ToDecimal(dgvInvoiceItems.Rows[i].Cells[3].ToString()), dgvInvoiceItems.Rows[i].Cells[0].ToString(), dgvInvoiceItems.Rows[i].Cells[4].ToString());
+                invoiceItems.Add(tempCar);
             }
         }
 
