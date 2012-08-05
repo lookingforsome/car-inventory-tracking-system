@@ -807,6 +807,84 @@ static class DataControl
             throw ex;
         }
     }
+
+	/// <summary>
+	/// method that returns a dataset containing a distinct list of invoice id's
+	/// </summary>
+	/// <returns>dataset containing invoice ids</returns>
+    public static DataSet getDistinctInvoiceIDs()
+    {
+	    try
+	    {
+		    clsDataAccess da = new clsDataAccess(); //Data Access object to query database
+		    DataSet ds; //Data set to store results of SQL statement
+		    string sInvoiceSQL = "SELECT DISTINCT InvoiceKey FROM Invoices"; //SQL statement to execute
+
+		    int iTotalResults = 0;  //Number of results that came back from SQL statement
+
+		    //Run the statement and store the result into the dataset
+		    ds = da.ExecuteSQLStatement(sInvoiceSQL, ref iTotalResults);
+
+		    //return the dataset
+		    return ds;
+	    }
+	    catch (Exception ex)
+	    {
+		    throw ex;
+	    }
+    }
+
+    /// <summary>
+    /// method that returns a dataset containing a distinct list of invoice Dates
+    /// </summary>
+    /// <returns>dataset containing invoice Dates</returns>
+    public static DataSet getDistinctInvoiceDates()
+    {
+	    try
+	    {
+		    clsDataAccess da = new clsDataAccess(); //Data Access object to query database
+		    DataSet ds; //Data set to store results of SQL statement
+		    string sDateSQL = "SELECT DISTINCT PurchaseDate FROM Invoices"; //SQL statement to execute
+
+		    int iTotalResults = 0;  //Number of results that came back from SQL statement
+
+		    //Run the statement and store the result into the dataset
+		    ds = da.ExecuteSQLStatement(sDateSQL, ref iTotalResults);
+
+		    //return the dataset
+		    return ds;
+	    }
+	    catch (Exception ex)
+	    {
+		    throw ex;
+	    }
+    }
+
+    /// <summary>
+    /// method that returns a dataset containing a distinct list of invoice Cost values
+    /// </summary>
+    /// <returns>dataset containing invoice Cost values</returns>
+    public static DataSet getDistinctInvoiceCosts()
+    {
+	    try
+	    {
+		    clsDataAccess da = new clsDataAccess(); //Data Access object to query database
+		    DataSet ds; //Data set to store results of SQL statement
+		    string sCostSQL = "SELECT DISTINCT TotalCost FROM Invoices"; //SQL statement to execute
+
+		    int iTotalResults = 0;  //Number of results that came back from SQL statement
+
+		    //Run the statement and store the result into the dataset
+		    ds = da.ExecuteSQLStatement(sCostSQL, ref iTotalResults);
+
+		    //return the dataset
+		    return ds;
+	    }
+	    catch (Exception ex)
+	    {
+		    throw ex;
+	    }
+    }
     /// <summary>
     /// Retrieves all of the sales people and their IDs from the database.
     /// </summary>
