@@ -53,9 +53,12 @@
 			// 
 			// InvoiceDataGridView
 			// 
+			this.InvoiceDataGridView.AllowUserToAddRows = false;
+			this.InvoiceDataGridView.AllowUserToDeleteRows = false;
 			this.InvoiceDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.InvoiceDataGridView.Location = new System.Drawing.Point(56, 72);
 			this.InvoiceDataGridView.Name = "InvoiceDataGridView";
+			this.InvoiceDataGridView.ReadOnly = true;
 			this.InvoiceDataGridView.Size = new System.Drawing.Size(683, 294);
 			this.InvoiceDataGridView.TabIndex = 1;
 			this.InvoiceDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.InvoiceDataGridView_CellClick);

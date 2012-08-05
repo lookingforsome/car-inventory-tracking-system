@@ -29,7 +29,10 @@ namespace _4780_final_car_POS
 		#endregion
 
 		#region Constructor(s)
-
+		/// <summary>
+		/// Constructs the frmSearch object, which includes a datagrid view as well as 
+		/// dropdown filters which will filter the data grid view
+		/// </summary>
 		public frmSearch()
 		{
 			InitializeComponent();
@@ -51,6 +54,9 @@ namespace _4780_final_car_POS
 
 		#region Methods
 
+		/// <summary>
+		/// Method in charge of filling the datagridview with invoice information
+		/// </summary>
 		public void fillDataGridView()
 		{
 			try
@@ -118,6 +124,9 @@ namespace _4780_final_car_POS
 			}
 		}
 
+		/// <summary>
+		/// method in charge of clearing and filling the invoice dropdown list of items.
+		/// </summary>
 		public void fillInvoiceDropdown()
 		{
 			try
@@ -125,14 +134,7 @@ namespace _4780_final_car_POS
 				//clear out old data
 				cmbInvoiceNumber.Items.Clear();
 
-				da = new clsDataAccess(); //Data Access object to query database
-				DataSet ds; //Data set to store results of SQL statement
-				string sInvoiceSQL = "SELECT DISTINCT InvoiceKey FROM Invoices"; //SQL statement to execute
-
-				int iTotalResults = 0;  //Number of results that came back from SQL statement
-
-				//Run the statement and store the result into the dataset
-				ds = da.ExecuteSQLStatement(sInvoiceSQL, ref iTotalResults);
+				DataSet ds = DataControl.getDistinctInvoiceIDs();
 
 				//For each row in the data set, add a new item to the combo box
 				foreach (DataRow dr in ds.Tables[0].Rows)
@@ -144,6 +146,9 @@ namespace _4780_final_car_POS
 			}
 		}
 
+		/// <summary>
+		/// method in charge of filling the date dropdown filterlist
+		/// </summary>
 		public void fillDateDropdown()
 		{
 			try
@@ -151,15 +156,8 @@ namespace _4780_final_car_POS
 				//clear out old data
 				cmbInvoiceDate.Items.Clear();
 
-				da = new clsDataAccess(); //Data Access object to query database
-				DataSet ds; //Data set to store results of SQL statement
-				string sDateSQL = "SELECT DISTINCT PurchaseDate FROM Invoices"; //SQL statement to execute
-
-				int iTotalResults = 0;  //Number of results that came back from SQL statement
-
-				//Run the statement and store the result into the dataset
-				ds = da.ExecuteSQLStatement(sDateSQL, ref iTotalResults);
-
+				DataSet ds = DataControl.getDistinctInvoiceDates();
+				
 				//For each row in the data set, add a new item to the combo box
 				foreach (DataRow dr in ds.Tables[0].Rows)
 					cmbInvoiceDate.Items.Add(dr["PurchaseDate"].ToString());
@@ -170,22 +168,17 @@ namespace _4780_final_car_POS
 			}
 		}
 
+		/// <summary>
+		/// Method in charge of filling the cost dropdown with invoice costs
+		/// </summary>
 		public void fillCostDropdown()
 		{
-
 			try
 			{
 				//clear out old data
 				cmbTotalCost.Items.Clear();
 
-				da = new clsDataAccess(); //Data Access object to query database
-				DataSet ds; //Data set to store results of SQL statement
-				string sCostSQL = "SELECT DISTINCT TotalCost FROM Invoices"; //SQL statement to execute
-
-				int iTotalResults = 0;  //Number of results that came back from SQL statement
-
-				//Run the statement and store the result into the dataset
-				ds = da.ExecuteSQLStatement(sCostSQL, ref iTotalResults);
+				DataSet ds = DataControl.getDistinctInvoiceCosts();				
 
 				//For each row in the data set, add a new item to the combo box
 				foreach (DataRow dr in ds.Tables[0].Rows)
@@ -220,6 +213,12 @@ namespace _4780_final_car_POS
 			}
 		}
 
+		/// <summary>
+		/// Button click event for the clear filters button.
+		/// It clears the filters current text, and then repopulates them as well as the datagridview.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void btnClearFilters_Click(object sender, EventArgs e)
 		{
 			//set the dropdown text to blank.
@@ -236,10 +235,20 @@ namespace _4780_final_car_POS
 			InvoiceDataGridView.DataSource = DataControl.getAllInvoices();
 		}
 
+		/// <summary>
+		/// button click event for the data grid view "Select this invoice" button.  
+		/// populates the public variable invoice id with the id of the invoice selected.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void InvoiceDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
 		{
 			try
 			{
+				//check to make sure it wasn't a column header
+				if(e.RowIndex == -1)
+					return;
+
 				//Grab the invoice record that was clicked on
 				Invoice invTemp = (Invoice)InvoiceDataGridView.Rows[e.RowIndex].DataBoundItem;
 
@@ -250,15 +259,13 @@ namespace _4780_final_car_POS
 					if (e.ColumnIndex == InvoiceDataGridView.Columns["SelectInvoice"].Index)
 					{
 						//Here's where I throw the invoice key to the Create invoice
-						int InvoiceKey = invTemp.InvoiceKey;
+						PassedInvoiceKey = invTemp.InvoiceKey;
 						this.Hide();
 					}
 					else
 					{
-						////A row was selected so display the employee's information
-						//lblID.Text = invTemp.ID.ToString();
-						//lblFirstName.Text = invTemp.FirstName;
-						//lblLastName.Text = invTemp.LastName;
+						//do nothing
+						return;
 					}
 				}
 			}
@@ -272,6 +279,12 @@ namespace _4780_final_car_POS
 
 		#region FilterEvents
 
+		/// <summary>
+		/// combobox selected index change event for the invoice number combobox.
+		/// is in charge of selecting the item and filtering the datagridview down to that selected value
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void cmbInvoiceNumber_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			try
@@ -291,6 +304,12 @@ namespace _4780_final_car_POS
 			}
 		}
 
+		/// <summary>
+		/// selected index change event for the invoice date combo box filter
+		/// is in charge of filtering the datagridview down to the records which have a matching date value.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void cmbInvoiceDate_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			try
@@ -309,6 +328,12 @@ namespace _4780_final_car_POS
 			}
 		}
 
+		/// <summary>
+		/// selected index change event for the invoice TotalCost combo box filter
+		/// is in charge of filtering the datagridview down to the records which have a matching date value.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void cmbTotalCost_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			try
