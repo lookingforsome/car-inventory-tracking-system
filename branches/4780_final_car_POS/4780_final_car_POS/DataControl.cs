@@ -613,7 +613,7 @@ static class DataControl
             DateTime dtPurchaseDate = DateTime.Parse(purchaseDate); // convert the purchase date string to a date time object
 
             //SQL Query to the database to search for invoices given a certain purchase date
-            string sqlQuery = "SELECT * FROM Invoices WHERE PurchaseDate = " + dtPurchaseDate.ToString() + ";";
+            string sqlQuery = "SELECT * FROM Invoices WHERE PurchaseDate = #" + dtPurchaseDate.ToString() + "#;";
             ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
 
             //create a list of all the invoices, if there are invoices found, add them to the list
