@@ -109,7 +109,30 @@ namespace _4780_final_car_POS
 
 			//instantiate the cost dropdown
 
+			string sCostSQL = "SELECT DISTINCT TotalCost FROM Invoices"; //SQL statement to execute
+
+			iTotalResults = 0;  //Number of results that came back from SQL statement
+
+			//Run the statement and store the result into the dataset
+			ds = da.ExecuteSQLStatement(sCostSQL, ref iTotalResults);
+
+			//For each row (flight) in the data set, add a new item to the combo box
+			foreach (DataRow dr in ds.Tables[0].Rows)
+				cmbTotalCost.Items.Add(dr["TotalCost"].ToString());
+
+
 			//instantiate the date dropdown.
+
+			string sDateSQL = "SELECT DISTINCT PurchaseDate FROM Invoices"; //SQL statement to execute
+
+			iTotalResults = 0;  //Number of results that came back from SQL statement
+
+			//Run the statement and store the result into the dataset
+			ds = da.ExecuteSQLStatement(sDateSQL, ref iTotalResults);
+
+			//For each row (flight) in the data set, add a new item to the combo box
+			foreach (DataRow dr in ds.Tables[0].Rows)
+				cmbInvoiceDate.Items.Add(dr["PurchaseDate"].ToString());
 		}
 
 		#region Button Methods
@@ -135,11 +158,59 @@ namespace _4780_final_car_POS
 		#endregion
 
 		private void cmbInvoiceNumber_SelectedIndexChanged(object sender, EventArgs e)
-		{	
-			//InvoiceDataGridView.CurrentRow.DataBoundItem;
+		{
+			try
+			{
+				//set the other dropdowns to blank
+				cmbInvoiceDate.Text = "";
+				cmbTotalCost.Text = "";
+				//get the string value selected and convert that into an int.
+				string sSelection = cmbInvoiceNumber.SelectedItem.ToString();
+				int iSelection = Convert.ToInt32(sSelection);
+				//use the int value of the value selected to repopulate the binding list
+				InvoiceDataGridView.DataSource = DataControl.getInvoiceByID(iSelection);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(MethodInfo.GetCurrentMethod().DeclaringType.Name + "." + MethodInfo.GetCurrentMethod().Name + " -> " + ex.Message);
+			}
+		}
 
+		private void cmbInvoiceDate_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			try
+			{
+				//set the other dropdowns to blank
+				cmbInvoiceNumber.Text = "";
+				cmbTotalCost.Text = "";
+				//get the string value selected.
+				string sSelection = cmbInvoiceDate.SelectedItem.ToString();
+				//use the string date value to repopulate the data grid view
+				InvoiceDataGridView.DataSource = DataControl.getInvoicesByDate(sSelection);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(MethodInfo.GetCurrentMethod().DeclaringType.Name + "." + MethodInfo.GetCurrentMethod().Name + " -> " + ex.Message);
+			}
+		}
 
-			InvoiceDataGridView.DataSource = DataControl.getInvoiceByID(3);
+		private void cmbTotalCost_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			try
+			{
+				//set the other dropdowns to blank
+				cmbInvoiceDate.Text = "";
+				cmbInvoiceNumber.Text = "";
+				//get the string value selected and convert that into a decimal.
+				string sSelection = cmbInvoiceNumber.SelectedItem.ToString();
+				decimal dSelection = Convert.ToDecimal(sSelection);
+				//use the int value of the value selected to repopulate the binding list
+				InvoiceDataGridView.DataSource = DataControl.getInvoicesByCost(dSelection);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(MethodInfo.GetCurrentMethod().DeclaringType.Name + "." + MethodInfo.GetCurrentMethod().Name + " -> " + ex.Message);
+			}
 		}
 
 
@@ -154,7 +225,7 @@ namespace _4780_final_car_POS
 				if (invTemp != null)
 				{
 					//Determine if the "Select This Invoice" button was clicked
-					if (e.ColumnIndex == InvoiceDataGridView.Columns["InvoiceKeyColumn"].Index)
+					if (e.ColumnIndex == InvoiceDataGridView.Columns["SelectInvoice"].Index)
 					{
 						//Here's where I throw the invoice key to the Create invoice
 						int InvoiceKey = invTemp.InvoiceKey;
@@ -174,6 +245,18 @@ namespace _4780_final_car_POS
 				MessageBox.Show(MethodInfo.GetCurrentMethod().DeclaringType.Name + "." + MethodInfo.GetCurrentMethod().Name + " -> " + ex.Message);
 			}
 		}
+
+		private void btnClearFilters_Click(object sender, EventArgs e)
+		{
+			//set the dropdown text to blank.
+			cmbTotalCost.Text = "";
+			cmbInvoiceDate.Text = "";
+			cmbInvoiceNumber.Text = "";
+
+			//repopulate the datagridview with no filters.
+			InvoiceDataGridView.DataSource = DataControl.getAllInvoices();
+		}
+
 
 	}
 }
