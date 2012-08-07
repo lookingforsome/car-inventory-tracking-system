@@ -10,7 +10,10 @@ using System.Data;
 /// </summary>
 static class DataControl
 {
-    public static int selectedInvoiceKey {get; set;}
+    /// <summary>
+    /// Validates inputs and handles errors.
+    /// </summary>
+    private static dataValidator dv = new dataValidator();
 
     /// <summary>
     /// Method retrieves the invoice's items from the database
@@ -33,14 +36,14 @@ static class DataControl
 
             //create a list of all the invoiceItems, if there is an invoice found, add the invoice's items to the list
             List<Car> invoiceItems = new List<Car>();
-            
+
             if (iRet > 0)
             {
                 //go through the dataset adding the invoice's items
                 for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
                 {
                     //retrieve the inventory item's information given the inventory ID
-                    sqlQuery = "SELECT * FROM Inventory WHERE VIN = '" + ds.Tables[0].Rows[x][0].ToString() + "';";
+                    sqlQuery = "SELECT * FROM Inventory WHERE VIN = " + Convert.ToInt64(ds.Tables[0].Rows[x][0].ToString()) + ";";
                     ds2 = da.ExecuteSQLStatement(sqlQuery, ref iRet2);
 
                     Car tempInvoiceItem = new Car(ds2.Tables[0].Rows[x][1].ToString(), Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()), Convert.ToDecimal(ds2.Tables[0].Rows[x][2].ToString()), ds2.Tables[0].Rows[x][0].ToString(), ds2.Tables[0].Rows[x][5].ToString());
@@ -82,10 +85,10 @@ static class DataControl
                 for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
                 {
                     //retrieve the inventory item's information given the inventory ID
-                    sqlQuery = "SELECT * FROM Inventory WHERE VIN = '" + ds.Tables[0].Rows[x][0].ToString() + "';";
+                    sqlQuery = "SELECT * FROM Inventory WHERE VIN = " + Convert.ToInt64(ds.Tables[0].Rows[x][0].ToString()) + ";";
                     ds2 = da.ExecuteSQLStatement(sqlQuery, ref iRet2);
 
-                    Car tempInvoiceItem = new Car(ds2.Tables[0].Rows[x][1].ToString(), Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()), Convert.ToDecimal(ds2.Tables[0].Rows[x][2].ToString()), ds2.Tables[0].Rows[x][0].ToString(), ds2.Tables[0].Rows[x][5].ToString());
+                    Car tempInvoiceItem = new Car(getCarModel(Convert.ToInt32(ds2.Tables[0].Rows[0][1].ToString())), Convert.ToInt32(ds2.Tables[0].Rows[0][3].ToString()), Convert.ToDecimal(ds2.Tables[0].Rows[0][2].ToString()), ds2.Tables[0].Rows[0][0].ToString(), ds2.Tables[0].Rows[0][5].ToString());
                     invoiceItems.Add(tempInvoiceItem);
                 }
             }
@@ -166,7 +169,7 @@ static class DataControl
     /// <param name="invoiceItems">List of all the invoice items objects (car objects)</param>
     /// <param name="totalCost">the accumulated total cost of the invoice items for the given invoice</param>
     /// <returns>true if successful, false otherwise</returns>
-    public static bool AddInvoice(int salesPersonKey, int customerKey, string purchaseDate, List<Car> invoiceItems, decimal totalCost)
+    public static long AddInvoice(int salesPersonKey, int customerKey, string purchaseDate, List<Car> invoiceItems, decimal totalCost)
     {
         try
         {
@@ -179,26 +182,27 @@ static class DataControl
             DateTime dtPurchaseDate = DateTime.Parse(purchaseDate);     //converted purchase date to a date time object
 
             // SQL Query to the database to insert an invoice
-            string sqlQuery = "INSERT INTO Invoices (TotalCost, CustomerKey, SalesmenKey, PurchaseDate) VALUES (" + totalCost + ", " + customerKey + ", " + salesPersonKey + ", '" + dtPurchaseDate.ToString() + "');";
+            string sqlQuery = "INSERT INTO Invoices (TotalCost, CustomerKey, SalesmenKey, PurchaseDate) VALUES (" + totalCost + ", " + customerKey + ", " + salesPersonKey + ", #" + dtPurchaseDate.ToString() + "#);";
 
             result = da.ExecuteNonQuery(sqlQuery);
 
-            //if the result was successful, check if there are invoice items and insert them if needed, otherwise return true
+            //if the result was successful, check if there are invoice items and insert them if needed, otherwise return just return the added invoice's id.
             if (result == 1)
             {
-                //if there are items to insert, insert them keeping a running total of all failed inserts, if there are no failures return true, otherwise false.
-                if (invoiceItems.Count > 0)
-                {
-                    //first retrieve the just added invoice key number of the invoice added
-                    sqlQuery = "SELECT InvoiceKey FROM Invoices WHERE CustomerKey = " + customerKey + " AND SalesmenKey = " + salesPersonKey + " AND PurchaseDate = '" + dtPurchaseDate.ToString() + "' AND TotalCost = " + totalCost + ";";
-                    ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+                //first retrieve the just added invoice key number of the invoice added
+                sqlQuery = "SELECT InvoiceKey FROM Invoices WHERE CustomerKey = " + customerKey + " AND SalesmenKey = " + salesPersonKey + " AND PurchaseDate = #" + dtPurchaseDate.ToString() + "# AND TotalCost = " + totalCost + ";";
+                ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
 
-                    //if the query didn't return anything return false, else continue to add the invoice items
-                    if (iRet > 0)
+                //if the query didn't return anything return 0 as the invoice key, else continue to add the invoice items
+                if (iRet > 0)
+                {
+                    long invoiceKey = Convert.ToInt64(ds.Tables[0].Rows[0][0].ToString());
+                    //if there are items to insert, insert them keeping a running total of all failed inserts, if there are no failures return invoice key, otherwise still return the invoice key.
+                    if (invoiceItems.Count > 0)
                     {
                         foreach (var item in invoiceItems)
                         {
-                            sqlQuery = "INSERT INTO InvoiceItems (VIN, InvoiceKey) VALUES (" + item.vin + ", " + ds.Tables[0].Rows[0][0].ToString() + ")";
+                            sqlQuery = "INSERT INTO InvoiceItems (VIN, InvoiceKey) VALUES (" + Convert.ToInt64(item.vin) + ", " + invoiceKey + ")";
                             result = da.ExecuteNonQuery(sqlQuery);
 
                             if (result != 1)
@@ -207,21 +211,16 @@ static class DataControl
                             }
                         }
 
-                        if (insertErrors == 0)
-                        {
-                            return true;
-                        }
-                        else
-                            return false;
+                        return invoiceKey;
                     }
                     else
-                        return false;
+                        return invoiceKey;
                 }
                 else
-                    return true;
+                    return 0;
             }
             else
-                return false;
+                return 0;
         }
         catch (Exception ex)
         {
@@ -250,9 +249,9 @@ static class DataControl
             DateTime dtPurchaseDate = DateTime.Parse(purchaseDate);     //converted purchase date to a date time object
 
             // SQL Query to the database to update the given invoice
-            string sqlQuery = "UPDATE Invoices SET TotalCost = " + totalCost + ", SET CustomerKey = "
-                                + customerKey + ", SET SalesmenKey = " + salesPersonKey + ", SET PurchaseDate = '"
-                                + dtPurchaseDate.ToString() + "' WHERE InvoiceKey = " + invoiceID + ";";
+            string sqlQuery = "UPDATE Invoices SET TotalCost = " + totalCost + ", CustomerKey = "
+                                + customerKey + ", SalesmenKey = " + salesPersonKey + ", PurchaseDate = #"
+                                + dtPurchaseDate.ToString() + "# WHERE InvoiceKey = " + invoiceID + ";";
 
             result = da.ExecuteNonQuery(sqlQuery);
 
@@ -270,7 +269,7 @@ static class DataControl
                     {
                         foreach (var item in invoiceItems)
                         {
-                            sqlQuery = "INSERT INTO InvoiceItems (VIN, InvoiceKey) VALUES (" + item.vin + ", " + invoiceID + ")";
+                            sqlQuery = "INSERT INTO InvoiceItems (VIN, InvoiceKey) VALUES (" + Convert.ToInt64(item.vin) + ", " + invoiceID + ")";
                             result = da.ExecuteNonQuery(sqlQuery);
 
                             if (result != 1)
@@ -325,7 +324,7 @@ static class DataControl
                 sqlQuery = "DELETE FROM InvoiceItems WHERE InvoiceKey = " + invoiceID + ";";
                 result = da.ExecuteNonQuery(sqlQuery);
 
-                if (result == 1)
+                if (result > 0)
                 {
                     // SQL Query to the database to delete the invoice
                     sqlQuery = "DELETE FROM Invoices WHERE InvoiceKey = " + invoiceID + ";";
@@ -366,7 +365,7 @@ static class DataControl
     /// <param name="invoiceID">invoice ID number</param>
     /// <param name="vin">item ID vin number</param>
     /// <returns>true if successful, false otherwise</returns>
-    public static bool DeleteInvoiceItem(int invoiceID, string vin)
+    public static bool DeleteInvoiceItem(int invoiceID, long vin)
     {
         try
         {
@@ -374,7 +373,7 @@ static class DataControl
             int result = 0;                           // Represents whether a database query was successful
 
             // SQL Query to the database to delete the given invoice item from the invoice
-            string sqlQuery = "DELETE FROM InvoiceItems WHERE InvoiceKey = " + invoiceID + " AND VIN = '" + vin + "';";
+            string sqlQuery = "DELETE FROM InvoiceItems WHERE InvoiceKey = " + invoiceID + " AND VIN = " + vin + ";";
             result = da.ExecuteNonQuery(sqlQuery);
 
             //check if the deletion was successful
@@ -396,7 +395,7 @@ static class DataControl
     /// <param name="year">the vehicle's year</param>
     /// <param name="cost">the vehicle's cost</param>
     /// <returns>true if successful, false otherwise</returns>
-    public static bool AddInventoryItem(string vin, int modelKey, int year, decimal cost)
+    public static bool AddInventoryItem(long vin, int modelKey, int year, decimal cost)
     {
         try
         {
@@ -404,7 +403,7 @@ static class DataControl
             int result = 0;                           // Represents whether the database query was successful
 
             // SQL Query to the database to add the new inventory item
-            string sqlQuery = "INSERT INTO Inventory (VIN, ModelKey, Price, VehicleYear) VALUES ('"+ vin + "'," + modelKey + ", " + cost + ", " + year + ");";
+            string sqlQuery = "INSERT INTO Inventory (VIN, ModelKey, Price, VehicleYear) VALUES (" + vin + "," + modelKey + ", " + cost + ", " + year + ");";
             result = da.ExecuteNonQuery(sqlQuery);
 
             //check to see if the insert was successful
@@ -426,7 +425,7 @@ static class DataControl
     /// <param name="year">the vehicle's year</param>
     /// <param name="cost">the cost of the vehicle</param>
     /// <returns>true if successful, false otherwise</returns>
-    public static bool EditInventoryItem(string vin, int model, int year, decimal cost)
+    public static bool EditInventoryItem(long vin, int model, int year, decimal cost)
     {
         try
         {
@@ -434,7 +433,7 @@ static class DataControl
             int result = 0;                         // Represents whether the query to the database was successful
 
             // SQL Query to the database to update the given inventory item
-            string sqlQuery = "UPDATE Inventory SET ModelKey = " + model + ", SET Price = " + cost + ", SET VehicleYear = " + year + " WHERE VIN = '" + vin + "';";
+            string sqlQuery = "UPDATE Inventory SET ModelKey = " + model + ", SET Price = " + cost + ", SET VehicleYear = " + year + " WHERE VIN = " + vin + ";";
             result = da.ExecuteNonQuery(sqlQuery);
 
             //check to see if the update was successful
@@ -455,7 +454,7 @@ static class DataControl
     /// <param name="vin">the vin number of the vehicle</param>
     /// <param name="invoiceIDs">the invoice ids that contain this item</param>
     /// <returns>true if successful, false if an invoice contains the item or deletion failure</returns>
-    public static bool DeleteInventoryItem(string vin, ref string invoiceIDs)
+    public static bool DeleteInventoryItem(long vin, ref string invoiceIDs)
     {
         try
         {
@@ -466,7 +465,7 @@ static class DataControl
 
             // SQL Query to the database to see if there are any invoices with this item, if so return false and the invoice ids that contain the item.
             // Otherwise delete the item.
-            string sqlQuery = "SELECT DISTINCT InvoiceKey FROM InvoiceItems WHERE VIN = '" + vin + "';";
+            string sqlQuery = "SELECT DISTINCT InvoiceKey FROM InvoiceItems WHERE VIN = " + vin + ";";
             ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
 
             if (iRet > 0)
@@ -488,7 +487,7 @@ static class DataControl
             else
             {
                 //Delete the item from the database
-                sqlQuery = "DELETE FROM Inventory WHERE VIN = '" + vin + "';";
+                sqlQuery = "DELETE FROM Inventory WHERE VIN = " + vin + ";";
                 result = da.ExecuteNonQuery(sqlQuery);
 
                 //check to see if the deletion was successful
@@ -517,7 +516,7 @@ static class DataControl
             DataSet ds;                             // Dataset to hold results from database queries
 
             //SQL Query to the database to search for all current inventory items, then return them in a dataset.
-            string sqlQuery = "SELECT Inventory.VIN, FORMAT(VehicleYear, '0000') + ' ' + MakeName + ' ' + ModelName AS InventoryName " + 
+            string sqlQuery = "SELECT Inventory.VIN, FORMAT(VehicleYear, '0000') + ' ' + MakeName + ' ' + ModelName AS InventoryName " +
                               "FROM Inventory, Models, Makes " +
                               "WHERE Inventory.ModelKey = Models.ModelKey AND Models.MakeKey = Makes.MakeKey;";
 
@@ -536,7 +535,7 @@ static class DataControl
     /// </summary>
     /// <param name="vin">the vin number of the vehicle</param>
     /// <returns>the inventory item's cost; format: $00.00</returns>
-    public static string getInventoryItemCost(string vin)
+    public static string getInventoryItemCost(long vin)
     {
         try
         {
@@ -544,12 +543,12 @@ static class DataControl
             string cost;                            //string to hold the returned item's cost from the database
 
             //SQL Query to the database to retrieve the given inventory item's cost, then return it.
-            string sqlQuery = "SELECT Price FROM Inventory WHERE VIN = '" + vin + "';";
+            string sqlQuery = "SELECT Price FROM Inventory WHERE VIN = " + vin + ";";
             cost = da.ExecuteScalarSQL(sqlQuery);
-            
+
             return cost;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw ex;
         }
@@ -669,6 +668,42 @@ static class DataControl
                     salesPersonName = getSalesPersonByID(Convert.ToInt32(ds.Tables[0].Rows[x][3].ToString()));
 
                     Invoice tempInvoice = new Invoice(ds.Tables[0].Rows[x][0].ToString(), customerName, salesPersonName, ds.Tables[0].Rows[x][4].ToString(), ds.Tables[0].Rows[x][1].ToString());
+                    invoices.Add(tempInvoice);
+                }
+            }
+            return invoices;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+    /// <summary>
+    /// Method retrieve an invoice by its invoice id, but for customers and sales person, only their id's are returned not their full names.
+    /// </summary>
+    /// <param name="invoiceID">the invoice's id number</param>
+    /// <returns>List of the searched for invoice</returns>
+    public static BindingList<Invoice> getInvoiceByIDNoNames(int invoiceID)
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
+
+            //SQL Query to the database to search for the given invoice
+            string sqlQuery = "SELECT * FROM Invoices WHERE InvoiceKey = " + invoiceID + ";";
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+            //create a list of the invoice, if there is an invoice found, add it to the list
+            BindingList<Invoice> invoices = new BindingList<Invoice>();
+
+            if (iRet > 0)
+            {
+                //go through the dataset adding the invoice
+                for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
+                {
+                    Invoice tempInvoice = new Invoice(ds.Tables[0].Rows[x][0].ToString(), ds.Tables[0].Rows[x][2].ToString(), ds.Tables[0].Rows[x][3].ToString(), ds.Tables[0].Rows[x][4].ToString(), ds.Tables[0].Rows[x][1].ToString());
                     invoices.Add(tempInvoice);
                 }
             }
@@ -808,30 +843,30 @@ static class DataControl
         }
     }
 
-	/// <summary>
-	/// method that returns a dataset containing a distinct list of invoice id's
-	/// </summary>
-	/// <returns>dataset containing invoice ids</returns>
+    /// <summary>
+    /// method that returns a dataset containing a distinct list of invoice id's
+    /// </summary>
+    /// <returns>dataset containing invoice ids</returns>
     public static DataSet getDistinctInvoiceIDs()
     {
-	    try
-	    {
-		    clsDataAccess da = new clsDataAccess(); //Data Access object to query database
-		    DataSet ds; //Data set to store results of SQL statement
-		    string sInvoiceSQL = "SELECT DISTINCT InvoiceKey FROM Invoices"; //SQL statement to execute
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); //Data Access object to query database
+            DataSet ds; //Data set to store results of SQL statement
+            string sInvoiceSQL = "SELECT DISTINCT InvoiceKey FROM Invoices"; //SQL statement to execute
 
-		    int iTotalResults = 0;  //Number of results that came back from SQL statement
+            int iTotalResults = 0;  //Number of results that came back from SQL statement
 
-		    //Run the statement and store the result into the dataset
-		    ds = da.ExecuteSQLStatement(sInvoiceSQL, ref iTotalResults);
+            //Run the statement and store the result into the dataset
+            ds = da.ExecuteSQLStatement(sInvoiceSQL, ref iTotalResults);
 
-		    //return the dataset
-		    return ds;
-	    }
-	    catch (Exception ex)
-	    {
-		    throw ex;
-	    }
+            //return the dataset
+            return ds;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 
     /// <summary>
@@ -840,24 +875,24 @@ static class DataControl
     /// <returns>dataset containing invoice Dates</returns>
     public static DataSet getDistinctInvoiceDates()
     {
-	    try
-	    {
-		    clsDataAccess da = new clsDataAccess(); //Data Access object to query database
-		    DataSet ds; //Data set to store results of SQL statement
-		    string sDateSQL = "SELECT DISTINCT PurchaseDate FROM Invoices"; //SQL statement to execute
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); //Data Access object to query database
+            DataSet ds; //Data set to store results of SQL statement
+            string sDateSQL = "SELECT DISTINCT PurchaseDate FROM Invoices"; //SQL statement to execute
 
-		    int iTotalResults = 0;  //Number of results that came back from SQL statement
+            int iTotalResults = 0;  //Number of results that came back from SQL statement
 
-		    //Run the statement and store the result into the dataset
-		    ds = da.ExecuteSQLStatement(sDateSQL, ref iTotalResults);
+            //Run the statement and store the result into the dataset
+            ds = da.ExecuteSQLStatement(sDateSQL, ref iTotalResults);
 
-		    //return the dataset
-		    return ds;
-	    }
-	    catch (Exception ex)
-	    {
-		    throw ex;
-	    }
+            //return the dataset
+            return ds;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 
     /// <summary>
@@ -866,24 +901,24 @@ static class DataControl
     /// <returns>dataset containing invoice Cost values</returns>
     public static DataSet getDistinctInvoiceCosts()
     {
-	    try
-	    {
-		    clsDataAccess da = new clsDataAccess(); //Data Access object to query database
-		    DataSet ds; //Data set to store results of SQL statement
-		    string sCostSQL = "SELECT DISTINCT TotalCost FROM Invoices"; //SQL statement to execute
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); //Data Access object to query database
+            DataSet ds; //Data set to store results of SQL statement
+            string sCostSQL = "SELECT DISTINCT TotalCost FROM Invoices"; //SQL statement to execute
 
-		    int iTotalResults = 0;  //Number of results that came back from SQL statement
+            int iTotalResults = 0;  //Number of results that came back from SQL statement
 
-		    //Run the statement and store the result into the dataset
-		    ds = da.ExecuteSQLStatement(sCostSQL, ref iTotalResults);
+            //Run the statement and store the result into the dataset
+            ds = da.ExecuteSQLStatement(sCostSQL, ref iTotalResults);
 
-		    //return the dataset
-		    return ds;
-	    }
-	    catch (Exception ex)
-	    {
-		    throw ex;
-	    }
+            //return the dataset
+            return ds;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
     /// <summary>
     /// Retrieves all of the sales people and their IDs from the database.
@@ -934,53 +969,6 @@ static class DataControl
         }
     }
 
-    /// <summary>
-    /// Adds the care to the database
-    /// </summary>
-    /// <param name="model">Model of the car that you want to insert</param>
-    /// <param name="vin">Vin of the car</param>
-    /// <param name="price">Price of the car</param>
-    /// <param name="year">Year of the car</param>
-    /// <param name="description">Description of the car</param>
-    public static void addCar(string model, string vin, double price, int year, string description)
-    {
-        try
-        {
-            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
-            int iRet = 0;                           // Represents the number of rows
-            DataSet ds;                             // Dataset to hold results from database queries
-
-            //sets the sql query to get the model key and executes it.  Also stores the model number into the int model number
-            string sqlQuery = "SELECT Models.ModelKey FROM Models WHERE Models.ModelName = '" + model + "'";
-            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
-            int modelNumber = int.Parse(ds.Tables[0].Rows[0][0].ToString());
-
-            //sets the sql query to insert the values into the inventory table
-            sqlQuery = "INSERT INTO Inventory(VIN, ModelKey, Price, VehicleYear, Sold, Description) VALUES('" + vin + "', " + modelNumber + ", " + price + ", " + year + ", 0 , '" + description + "');";
-            da.ExecuteNonQuery(sqlQuery);
-        }
-        catch (Exception ex)
-        {
-            
-            throw ex;
-        }
-    }
-
-    public static void deleteCar(string vin)
-    {
-        try
-        {
-            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
-            DataSet ds;                             // Dataset to hold results from database queries
-
-            //string sqlQuer = "DELETE 
-        }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
-    }
-
     //Michael Meyer
     /// <summary>
     /// Method retrieves all the invoices by a given cost
@@ -1024,7 +1012,7 @@ static class DataControl
     /// </summary>
     /// <param name="vin">the vehicle's vin number</param>
     /// <returns>the requested car object; null if the car searched for wasn't found.</returns>
-    public static Car getCarByVIN(string vin)
+    public static Car getCarByVIN(long vin)
     {
         try
         {
@@ -1033,7 +1021,7 @@ static class DataControl
             DataSet ds;                             // Dataset to hold results from database queries
 
             // SQL Query to the database to retrieve the given car from inventory
-            string sqlQuery = "SELECT VIN, Models.ModelName, Price, VehicleYear, Description FROM Inventory, Models WHERE Inventory.ModelKey = Models.ModelKey AND VIN = '" + vin + "';";
+            string sqlQuery = "SELECT VIN, Models.ModelName, Price, VehicleYear, Description FROM Inventory, Models WHERE Inventory.ModelKey = Models.ModelKey AND VIN = " + vin + ";";
             ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
 
             //create the customer's full name from the database's results
@@ -1049,7 +1037,6 @@ static class DataControl
             throw ex;
         }
     }
-
     //public bool carIsInInvoice(string vin)
     //{
     //    try
@@ -1065,7 +1052,7 @@ static class DataControl
     //        //checks to see if the table exists.  If the table exists, then there are invoices that have that car.
     //        //if (ds.Tables[0] != null)
     //        //{
-                
+
     //        //}
     //    }
     //    catch (Exception ex)
@@ -1073,4 +1060,40 @@ static class DataControl
     //        throw ex;
     //    }
     //}
+    /// <summary>
+    /// Method returns the next invoice key to be created.
+    /// </summary>
+    /// <returns>the next invoice key number, or 0 if the next invoice key number couldn't be retrieved</returns>
+    public static int getNextInvoiceKey()
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            string result = "";                     // Represents the returned string value form the database
+            bool validatorResult = false;           //Represents whether the returned database result is a number.
+
+            // SQL Query to the database to retrieve the max invoice key
+            string sqlQuery = "SELECT MAX(InvoiceKey) FROM Invoices;";
+            result = da.ExecuteScalarSQL(sqlQuery);
+
+            //check to see if the string returned isn't empty.  Then check to see if it is a number.
+            if (!String.IsNullOrEmpty(result))
+            {
+                validatorResult = dv.isNumber(result);
+
+                if (validatorResult)
+                {
+                    return (Convert.ToInt32(result) + 1);
+                }
+                else
+                    return 0;
+            }
+            else
+                return 0;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
 }
