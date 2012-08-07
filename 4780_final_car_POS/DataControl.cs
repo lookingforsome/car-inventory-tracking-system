@@ -934,6 +934,53 @@ static class DataControl
         }
     }
 
+    /// <summary>
+    /// Adds the care to the database
+    /// </summary>
+    /// <param name="model">Model of the car that you want to insert</param>
+    /// <param name="vin">Vin of the car</param>
+    /// <param name="price">Price of the car</param>
+    /// <param name="year">Year of the car</param>
+    /// <param name="description">Description of the car</param>
+    public static void addCar(string model, string vin, double price, int year, string description)
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
+
+            //sets the sql query to get the model key and executes it.  Also stores the model number into the int model number
+            string sqlQuery = "SELECT Models.ModelKey FROM Models WHERE Models.ModelName = '" + model + "'";
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+            int modelNumber = int.Parse(ds.Tables[0].Rows[0][0].ToString());
+
+            //sets the sql query to insert the values into the inventory table
+            sqlQuery = "INSERT INTO Inventory(VIN, ModelKey, Price, VehicleYear, Sold, Description) VALUES('" + vin + "', " + modelNumber + ", " + price + ", " + year + ", 0 , '" + description + "');";
+            da.ExecuteNonQuery(sqlQuery);
+        }
+        catch (Exception ex)
+        {
+            
+            throw ex;
+        }
+    }
+
+    public static void deleteCar(string vin)
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            DataSet ds;                             // Dataset to hold results from database queries
+
+            //string sqlQuer = "DELETE 
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
     //Michael Meyer
     /// <summary>
     /// Method retrieves all the invoices by a given cost
@@ -1002,4 +1049,28 @@ static class DataControl
             throw ex;
         }
     }
+
+    //public bool carIsInInvoice(string vin)
+    //{
+    //    try
+    //    {
+    //        clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+    //        int iRet = 0;                           // Represents the number of rows
+    //        DataSet ds;                             // Dataset to hold results from database queries
+
+    //        string sqlQuery = "SELECT InvoiceItems.Vin FROM InvoiceItems WHERE InvoiceItems.Vin = '" + vin +"';";
+
+    //        ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+    //        //checks to see if the table exists.  If the table exists, then there are invoices that have that car.
+    //        //if (ds.Tables[0] != null)
+    //        //{
+                
+    //        //}
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        throw ex;
+    //    }
+    //}
 }

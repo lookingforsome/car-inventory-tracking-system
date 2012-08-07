@@ -79,9 +79,23 @@ namespace _4780_final_car_POS
             dataGridView1.AutoGenerateColumns = false;
 
             dataGridView1.DataSource = inventory;
+
+            //populates the dropdown
+            populateModelDropdown();
         }
 
         #region Methods
+
+        /// <summary>
+        /// Updates the binding list
+        /// </summary>
+        public void updateInventoryList()
+        {
+            //sets the binding list
+            inventory = DataControl.getCarList();
+
+            dataGridView1.DataSource = inventory;
+        }
 
         /// <summary>
         /// Populates the model dropdown list
@@ -91,24 +105,25 @@ namespace _4780_final_car_POS
             try
             {
                 //Creates a dataset to hold the data
-                //DataSet ds;
+                DataSet ds;
 
                 //How many rows are returned
                 //int rowsReturned = 0;
 
                 //creates a data set and stores the values in ds
-                //ds = DataControl.getModels();
-                //ds = dc.ExecuteSQLStatement("SELECT Flight_ID, Flight_Number, Aircraft_Type FROM FLIGHT", ref rowsReturned);
+                ds = DataControl.getModels();
 
                 //goes through the dataset and populates the drop down box
-                //for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
-                //{
-                //    //cb_flightNumbers.Items.Add(ds.Tables[0].Rows[x][1].ToString());
-                //}
+                for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
+                {
+                    cmb_model.Items.Add(ds.Tables[0].Rows[x][1].ToString());
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                dv.HandleError(MethodInfo.GetCurrentMethod().DeclaringType.Name,
+                            MethodInfo.GetCurrentMethod().Name, ex.Message);
+                //throw;
             }
         }
 
@@ -165,7 +180,87 @@ namespace _4780_final_car_POS
             }
         }
 
-        #endregion
+        /// <summary>
+        /// Clears the text fields
+        /// </summary>
+        private void clearFields()
+        {
+            try
+            {
+                //Clears out the model selection
+                cmb_model.SelectedItem = null;
+                tbx_vin.Text = null;
+                tbx_price.Text = null;
+                tbx_year.Text = null;
+                tbx_description.Text = null;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
 
+        /// <summary>
+        /// Adds the values for the fields that are filled out.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void bnt_addCar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //Hids the error label and resets it
+                lbl_errors.Text = "Errors";
+                lbl_errors.Visible = false;
+
+                ///checks to see if we the fields are valid
+                if (cmb_model.SelectedItem != null &&
+                        dv.isAlphaNumeric(tbx_vin.Text) && tbx_vin.Text != "" && tbx_vin.Text != null &&
+                        dv.isNumber(tbx_price.Text) && tbx_price.Text != "" && tbx_price.Text != null &&
+                        dv.isNumber(tbx_year.Text) && tbx_year.Text != "" && tbx_year.Text != null &&
+                    /*dv.isAlphaNumeric(tbx_description.Text) && */tbx_description.Text != "" && tbx_description != null
+                    )
+                {
+                    //public static void addCar(string model, string vin, double price, int year, string description)
+                    DataControl.addCar(cmb_model.SelectedItem.ToString(), tbx_vin.Text, Convert.ToDouble(tbx_price.Text), Convert.ToInt32(tbx_year.Text), tbx_description.Text);
+
+                    //updates the list and clears out the fields
+                    updateInventoryList();
+                    clearFields();
+                }
+                else
+                {
+                    //Updates the error message.
+                    lbl_errors.Text = "Please enter valid information.";
+                    lbl_errors.Visible = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
+
+        /// <summary>
+        /// Clears the values
+        /// </summary>
+        /// <param name="sender">btn_clear</param>
+        /// <param name="e">event args</param>
+        private void btn_clear_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                clearFields();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
+
+        #endregion
     }
 }
