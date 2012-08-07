@@ -55,6 +55,8 @@
             this.dtpInvoiceDate = new System.Windows.Forms.DateTimePicker();
             this.lblInvoiceNum = new System.Windows.Forms.Label();
             this.lblInvoiceLabel = new System.Windows.Forms.Label();
+            this.lblItemCostMSymbol = new System.Windows.Forms.Label();
+            this.lblTotalCostMSymbol = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.gbInvoiceOptions.SuspendLayout();
             this.gbInvoiceForm.SuspendLayout();
@@ -145,6 +147,7 @@
             // 
             // gbInvoiceForm
             // 
+            this.gbInvoiceForm.Controls.Add(this.lblTotalCostMSymbol);
             this.gbInvoiceForm.Controls.Add(this.gbInvoiceItems);
             this.gbInvoiceForm.Controls.Add(this.label2);
             this.gbInvoiceForm.Controls.Add(this.cmbxCustomer);
@@ -166,6 +169,7 @@
             // 
             // gbInvoiceItems
             // 
+            this.gbInvoiceItems.Controls.Add(this.lblItemCostMSymbol);
             this.gbInvoiceItems.Controls.Add(this.lblSelectItem);
             this.gbInvoiceItems.Controls.Add(this.cmbxInventory);
             this.gbInvoiceItems.Controls.Add(this.lblItemCost);
@@ -203,7 +207,7 @@
             // 
             this.lblItemCost.AutoSize = true;
             this.lblItemCost.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblItemCost.Location = new System.Drawing.Point(336, 29);
+            this.lblItemCost.Location = new System.Drawing.Point(327, 28);
             this.lblItemCost.Name = "lblItemCost";
             this.lblItemCost.Size = new System.Drawing.Size(64, 13);
             this.lblItemCost.TabIndex = 2;
@@ -322,8 +326,9 @@
             this.dtpInvoiceDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpInvoiceDate.Location = new System.Drawing.Point(436, 30);
             this.dtpInvoiceDate.Name = "dtpInvoiceDate";
-            this.dtpInvoiceDate.Size = new System.Drawing.Size(100, 20);
+            this.dtpInvoiceDate.Size = new System.Drawing.Size(119, 20);
             this.dtpInvoiceDate.TabIndex = 7;
+            this.dtpInvoiceDate.Value = new System.DateTime(2012, 8, 7, 2, 32, 26, 0);
             // 
             // lblInvoiceNum
             // 
@@ -343,6 +348,26 @@
             this.lblInvoiceLabel.Size = new System.Drawing.Size(74, 16);
             this.lblInvoiceLabel.TabIndex = 5;
             this.lblInvoiceLabel.Text = "Invoice #:";
+            // 
+            // lblItemCostMSymbol
+            // 
+            this.lblItemCostMSymbol.AutoSize = true;
+            this.lblItemCostMSymbol.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblItemCostMSymbol.Location = new System.Drawing.Point(395, 28);
+            this.lblItemCostMSymbol.Name = "lblItemCostMSymbol";
+            this.lblItemCostMSymbol.Size = new System.Drawing.Size(14, 13);
+            this.lblItemCostMSymbol.TabIndex = 13;
+            this.lblItemCostMSymbol.Text = "$";
+            // 
+            // lblTotalCostMSymbol
+            // 
+            this.lblTotalCostMSymbol.AutoSize = true;
+            this.lblTotalCostMSymbol.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTotalCostMSymbol.Location = new System.Drawing.Point(166, 437);
+            this.lblTotalCostMSymbol.Name = "lblTotalCostMSymbol";
+            this.lblTotalCostMSymbol.Size = new System.Drawing.Size(14, 13);
+            this.lblTotalCostMSymbol.TabIndex = 18;
+            this.lblTotalCostMSymbol.Text = "$";
             // 
             // frmMain
             // 
@@ -397,6 +422,8 @@
         private System.Windows.Forms.ComboBox cmbxCustomer;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cmbxSalePerson;
+        private System.Windows.Forms.Label lblTotalCostMSymbol;
+        private System.Windows.Forms.Label lblItemCostMSymbol;
     }
 }
 
