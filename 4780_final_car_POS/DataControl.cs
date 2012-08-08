@@ -1048,7 +1048,7 @@ static class DataControl
             DataSet ds;                             // Dataset to hold results from database queries
 
             //query to get the vin to see if it is on an invoice or not
-            string sqlQuery = "SELECT InvoiceItems.Vin FROM InvoiceItems WHERE InvoiceItems.VIN = '" + vin + "';";
+            string sqlQuery = "SELECT InvoiceItems.Vin FROM InvoiceItems WHERE InvoiceItems.VIN = " + vin + ";";
             ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
 
             //checks to see if the vin is on an invoice
@@ -1067,7 +1067,106 @@ static class DataControl
         }
     }
 
+    //Michael Meyer
+    /// <summary>
+    /// Updates the car information
+    /// </summary>
+    /// <param name="vin">Vin of the car that you want to update</param>
+    /// <param name="price">New price</param>
+    /// <param name="year">New year</param>
+    /// <param name="description">new description</param>
+    public static void updateCar(string vin, decimal price, int year, string description)
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
 
+            //updates the car with the vin, and updates the price, year, and description
+            string sqlQuery = "Update Inventory Set Inventory.Price = " + price + " , Inventory.VehicleYear = " + year + " , Inventory.description = '" + description + "' WHERE Inventory.vin = " + vin + ";";
+            da.ExecuteNonQuery(sqlQuery);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    //Michael Meyer
+    /// <summary>
+    /// When the user goes to add a car we need to check to see if the vin is already there
+    /// </summary>
+    /// <param name="vin">vin the user is looking for</param>
+    /// <returns>true if the vin exists, false if it doesnt</returns>
+    public static bool vinExists(string vin)
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
+
+            //query to get the vin to see if it is on an invoice or not
+            string sqlQuery = "SELECT Inventory.vin FROM Inventory WHERE Inventory.VIN = " + vin + ";";
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+            //checks to see if the vin is on an invoice
+            if (ds.Tables[0].Rows.Count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    public static string getInvoiceByVin(string vin)
+    {
+        try
+        {
+            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+            int iRet = 0;                           // Represents the number of rows
+            DataSet ds;                             // Dataset to hold results from database queries
+
+            //gets all the invoices that a car is on and executes the query and puts it in ds
+            string sqlQuery = "SELECT Invoices.InvoiceKey FROM Invoices INNER JOIN InvoiceItems ON InvoiceItems.InvoiceKey = Invoices.InvoiceKey WHERE InvoiceItems.Vin = " + vin + ";";
+            ds = da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+            //stores the invoices that the vin is found on
+            string invoices = "";
+
+            if (iRet > 0)
+            {
+                //go through the dataset adding the invoices
+                for (int x = 0; x < ds.Tables[0].Rows.Count; x++)
+                {
+                    //builds the string of invoices.
+                    if (x == 0)
+                        invoices += ds.Tables[0].Rows[x][0].ToString();
+                    else if (x != 0)
+                    {
+                        invoices += ", " + ds.Tables[0].Rows[x][0].ToString();
+                    }
+                }
+            }
+
+            //returns the string of invoices the vin is on
+            return invoices;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    //Michael Meyer
     /// <summary>
     /// Deletes the car from the inventory table
     /// Make sure you see if that vin exists on an invoice.
@@ -1077,12 +1176,16 @@ static class DataControl
     {
         try
         {
-            clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
-            DataSet ds;                             // Dataset to hold results from database queries
+            //checks to see if the vin exists on the invoice
+            if (!vinExistsOnInvoice(vin))
+            {
+                clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
+                DataSet ds;                             // Dataset to hold results from database queries
 
-            string sqlQuery = "DELETE INVENTORY FROM Inventory WHERE Inventory.Vin = '" + vin + "';";
-
-            da.ExecuteNonQuery(sqlQuery);
+                //string to delete from inventoryitems and runs it
+                string sqlQuery = "DELETE INVENTORY FROM Inventory WHERE Inventory.Vin = " + vin + ";";
+                da.ExecuteNonQuery(sqlQuery);
+            }
         }
         catch (Exception ex)
         {

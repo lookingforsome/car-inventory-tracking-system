@@ -27,6 +27,9 @@ namespace _4780_final_car_POS
         {
             InitializeComponent();
 
+            //hides save button
+            btn_save.Visible = false;
+
             //sets the binding list
             inventory = DataControl.getCarList();
 
@@ -127,39 +130,69 @@ namespace _4780_final_car_POS
             }
         }
 
+        /// <summary>
+        /// When a cell is clicked this gets called
+        /// </summary>
+        /// <param name="sender">datagrid view</param>
+        /// <param name="e">event args</param>
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            //extracts the car that corresponds to the row that was clicked
-            Car tempCar = (Car)dataGridView1.Rows[e.RowIndex].DataBoundItem;
-            
-            //makes sure that there is a car
-            if (tempCar != null)
+            try
             {
-                //creates temp button for the sender
-                Button tempButton = (Button)sender;
-                if (tempButton.Text == "Delete")
-                {
-                    //Deletes the employee from the list
-                    inventory.Remove(tempCar);
-                }
-                if (tempButton.Text == "Edit")
-                {
+                //hides the error message labels
+                lbl_errors.Visible = false;
+                //extracts the car that corresponds to the row that was clicked
+                Car tempCar = (Car)dataGridView1.Rows[e.RowIndex].DataBoundItem;
 
+                //makes sure that there is a car
+                if (tempCar != null)
+                {
+                    //creates temp button for the sender
+                   // Button tempButton = (Button)sender;
+                    if (e.ColumnIndex == dataGridView1.Columns["Delete"].Index)
+                    {
+                        //Deletes the employee from the list
+                        if (DataControl.vinExistsOnInvoice(tempCar.vin))
+                        {
+                            //shows label errors
+                            lbl_errors.Visible = true;
+                            lbl_errors.Text = "Car exists on the following invoices: " + DataControl.getInvoiceByVin(tempCar.vin);
+                        }
+                        else
+                        {
+                            //deletes the car
+                            DataControl.deleteCar(tempCar.vin);
+
+                            //updates datagrid
+                            updateInventoryList();
+                        }
+
+                    }
+                    if (e.ColumnIndex == dataGridView1.Columns["Edit"].Index)
+                    {
+                        //updates the car information boxes and disables the items that we don't want the user to change
+                        cmb_model.SelectedItem = tempCar.model;
+                        tbx_vin.Text = tempCar.vin;
+                        tbx_price.Text = tempCar.price.ToString();
+                        tbx_year.Text = tempCar.year.ToString();
+                        tbx_description.Text = tempCar.description;
+
+                        cmb_model.Enabled = false;
+                        tbx_vin.Enabled = false;
+                        dataGridView1.Enabled = false;
+                        bnt_addCar.Enabled = false;
+                        btn_clear.Enabled = false;
+
+                        //enables the save button
+                        btn_save.Visible = true;
+                    }
                 }
             }
-            
-            ////Make sure there is an employee
-            //if (emp != null)
-            //{
-            //    //Determine if the "Delete" button was clicked
-            //    if (e.ColumnIndex == dataGridView1.Columns["DeleteEmployee"].Index)
-            //    {
-            //        //Remove the employee from the list
-            //        inventory.Remove(tempCar);
-            //        //or
-            //        //dataGridView1.Rows.Remove(dataGridView1.Rows[e.RowIndex]);
-            //    }
-            //}
+            catch (Exception ex)
+            {
+                dv.HandleError(MethodInfo.GetCurrentMethod().DeclaringType.Name,
+                            MethodInfo.GetCurrentMethod().Name, ex.Message);
+            }
         }
 
         /// <summary>
@@ -171,6 +204,7 @@ namespace _4780_final_car_POS
         {
             try
             {
+                //hids the form
                 this.Hide();
             }
             catch (Exception ex)
@@ -210,7 +244,7 @@ namespace _4780_final_car_POS
         {
             try
             {
-                //Hids the error label and resets it
+                //Hides the error label and resets it
                 lbl_errors.Text = "Errors";
                 lbl_errors.Visible = false;
 
@@ -222,12 +256,20 @@ namespace _4780_final_car_POS
                     /*dv.isAlphaNumeric(tbx_description.Text) && */tbx_description.Text != "" && tbx_description != null
                     )
                 {
-                    //public static void addCar(string model, string vin, double price, int year, string description)
-                    DataControl.addCar(cmb_model.SelectedItem.ToString(), tbx_vin.Text, Convert.ToDouble(tbx_price.Text), Convert.ToInt32(tbx_year.Text), tbx_description.Text);
+                    if (!DataControl.vinExists(tbx_vin.Text))
+                    {
+                        //public static void addCar(string model, string vin, double price, int year, string description)
+                        DataControl.addCar(cmb_model.SelectedItem.ToString(), tbx_vin.Text, Convert.ToDouble(tbx_price.Text), Convert.ToInt32(tbx_year.Text), tbx_description.Text);
 
-                    //updates the list and clears out the fields
-                    updateInventoryList();
-                    clearFields();
+                        //updates the list and clears out the fields
+                        updateInventoryList();
+                        clearFields();
+                    }
+                    else
+                    {
+                        lbl_errors.Text = "VIN already exists.";
+                        lbl_errors.Visible = true;
+                    }
                 }
                 else
                 {
@@ -252,7 +294,11 @@ namespace _4780_final_car_POS
         {
             try
             {
+                //clears the fields to add a car
                 clearFields();
+
+                //hides error
+                lbl_errors.Visible = false;
             }
             catch (Exception ex)
             {
@@ -261,6 +307,94 @@ namespace _4780_final_car_POS
             
         }
 
+        /// <summary>
+        /// When the person saves the car that they are editing this gets called
+        /// </summary>
+        /// <param name="sender">btn_Save</param>
+        /// <param name="e">event args</param>
+        private void btn_save_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //stores the price
+                decimal price = 0;
+                //validates the price
+                if(dv.isNumber(tbx_price.Text) && tbx_price.Text != "" && tbx_price.Text != null)
+                {
+                    price = int.Parse(tbx_price.Text);
+                }
+                else 
+                {
+                    lbl_errors.Visible = true;
+                    lbl_errors.Text = "Enter a valid price";
+                }
+                //stores the year
+                int year = 0;
+                //validates the year
+                if(dv.isNumber(tbx_year.Text) && tbx_year.Text != "" && tbx_year.Text != null)
+                {
+                    year = int.Parse(tbx_year.Text);
+                }    
+                else
+                {
+                    lbl_errors.Visible = true;
+                    lbl_errors.Text = "Enter a valid year";
+                }
+
+                //stores the description
+                string description;
+                //makes the description not null or an empty string when it is null.
+                if (tbx_description.Text == null || tbx_description.Text == "")
+                    description = "";
+                else
+                    description = tbx_description.Text;
+
+                //makes sure that they have entered in a year and price
+                if (price != 0 && year != 0)
+                {
+                    //updates the car
+                    DataControl.updateCar(tbx_vin.Text, price, year, description);
+
+                    //hides the error label
+                    lbl_errors.Visible = false;
+
+                    //makes everything else valid
+                    cmb_model.Enabled = true;
+                    tbx_vin.Enabled = true;
+                    bnt_addCar.Enabled = true;
+                    btn_clear.Enabled = true;
+
+                    //clears the fields
+                    clearFields();
+                    //hides the save button
+                    btn_save.Visible = false;
+
+                    //updates and enables the data grid
+                    dataGridView1.Enabled = true;
+                    updateInventoryList();
+
+                    //deselects everything in the model combobox
+                    cmb_model.SelectedText = null;
+                    cmb_model.SelectedValue = null;
+                    cmb_model.SelectedItem = null;
+                }
+                else
+                {
+                    //shows the errors
+                    lbl_errors.Visible = true;
+                    lbl_errors.Text = "Enter a valid price or year.";
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                dv.HandleError(MethodInfo.GetCurrentMethod().DeclaringType.Name,
+                            MethodInfo.GetCurrentMethod().Name, ex.Message);
+            }
+        }
+
         #endregion
+
+
     }
 }
