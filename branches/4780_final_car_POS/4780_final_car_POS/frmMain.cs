@@ -638,9 +638,16 @@ namespace _4780_final_car_POS
             //iterate through the data grid's rows and insert their cells' info into the car list.
             for (int i = 0; i < dgvInvoiceItems.RowCount; i++)
             {
-                string item = dgvInvoiceItems.Rows[i].Cells[2].Value.ToString();
-                Car tempCar = new Car(dgvInvoiceItems.Rows[i].Cells[2].Value.ToString(), Convert.ToInt32(dgvInvoiceItems.Rows[i].Cells[1].Value.ToString()), Convert.ToDecimal(dgvInvoiceItems.Rows[i].Cells[3].Value.ToString()), dgvInvoiceItems.Rows[i].Cells[0].Value.ToString(), dgvInvoiceItems.Rows[i].Cells[4].Value.ToString());
-                invoiceItems.Add(tempCar);
+                if (dgvInvoiceItems.Rows[i].Cells[2].Value == null)
+                {
+                    continue;
+                }
+                else
+                {
+                    string item = dgvInvoiceItems.Rows[i].Cells[2].Value.ToString();
+                    Car tempCar = new Car(dgvInvoiceItems.Rows[i].Cells[2].Value.ToString(), Convert.ToInt32(dgvInvoiceItems.Rows[i].Cells[1].Value.ToString()), Convert.ToDecimal(dgvInvoiceItems.Rows[i].Cells[3].Value.ToString()), dgvInvoiceItems.Rows[i].Cells[0].Value.ToString(), dgvInvoiceItems.Rows[i].Cells[4].Value.ToString());
+                    invoiceItems.Add(tempCar);
+                }
             }
         }
         /// <summary>
