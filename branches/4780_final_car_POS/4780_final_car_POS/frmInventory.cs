@@ -19,73 +19,90 @@ namespace _4780_final_car_POS
         /// </summary>
         dataValidator dv = new dataValidator();
 
+        /// <summary>
+        /// Inventory binding list.  This populates the datagrid
+        /// </summary>
         BindingList<Car> inventory = new BindingList<Car>();
 
         #endregion
 
+        #region constructor
+        
+        /// <summary>
+        /// Constructor for the form
+        /// </summary>
         public frmInventory()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
 
-            //hides save button
-            btn_save.Visible = false;
+                //hides save button
+                btn_save.Visible = false;
 
-            //sets the binding list
-            inventory = DataControl.getCarList();
+                //sets the binding list
+                inventory = DataControl.getCarList();
 
-            //Create 4 columns to be displayed in the DataGridView
-            DataGridViewTextBoxColumn Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            DataGridViewTextBoxColumn Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            DataGridViewTextBoxColumn Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            DataGridViewTextBoxColumn Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            DataGridViewTextBoxColumn Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            DataGridViewButtonColumn Column6 = new System.Windows.Forms.DataGridViewButtonColumn();
-            DataGridViewButtonColumn Column7 = new System.Windows.Forms.DataGridViewButtonColumn();
+                //Create 4 columns to be displayed in the DataGridView
+                DataGridViewTextBoxColumn Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+                DataGridViewTextBoxColumn Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+                DataGridViewTextBoxColumn Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+                DataGridViewTextBoxColumn Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+                DataGridViewTextBoxColumn Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+                DataGridViewButtonColumn Column6 = new System.Windows.Forms.DataGridViewButtonColumn();
+                DataGridViewButtonColumn Column7 = new System.Windows.Forms.DataGridViewButtonColumn();
 
-            //Add the columns to the DataGridView
-            dataGridView1.Columns.Add(Column1);
-            dataGridView1.Columns.Add(Column2);
-            dataGridView1.Columns.Add(Column3);
-            dataGridView1.Columns.Add(Column4);
-            dataGridView1.Columns.Add(Column5);
-            dataGridView1.Columns.Add(Column6);
-            dataGridView1.Columns.Add(Column7);
+                //Add the columns to the DataGridView
+                dataGridView1.Columns.Add(Column1);
+                dataGridView1.Columns.Add(Column2);
+                dataGridView1.Columns.Add(Column3);
+                dataGridView1.Columns.Add(Column4);
+                dataGridView1.Columns.Add(Column5);
+                dataGridView1.Columns.Add(Column6);
+                dataGridView1.Columns.Add(Column7);
 
-            //Set the column properties
-            Column1.DataPropertyName = "VIN";
-            Column1.HeaderText = "VIN";
+                //Set the column properties
+                Column1.DataPropertyName = "VIN";
+                Column1.HeaderText = "VIN";
 
-            Column2.DataPropertyName = "Model";
-            Column2.HeaderText = "Model";
+                Column2.DataPropertyName = "Model";
+                Column2.HeaderText = "Model";
 
-            Column3.DataPropertyName = "Price";
-            Column3.HeaderText = "Price";
+                Column3.DataPropertyName = "Price";
+                Column3.HeaderText = "Price";
 
-            Column4.DataPropertyName = "Year";
-            Column4.HeaderText = "Year";
+                Column4.DataPropertyName = "Year";
+                Column4.HeaderText = "Year";
 
-            Column5.DataPropertyName = "Description";
-            Column5.HeaderText = "Description";
+                Column5.DataPropertyName = "Description";
+                Column5.HeaderText = "Description";
 
-            Column6.HeaderText = "Edit";
-            Column6.Name = "Edit";
-            Column6.Text = "Edit";
-            Column6.UseColumnTextForButtonValue = true;
-            Column6.Width = 100;
+                Column6.HeaderText = "Edit";
+                Column6.Name = "Edit";
+                Column6.Text = "Edit";
+                Column6.UseColumnTextForButtonValue = true;
+                Column6.Width = 100;
 
-            Column7.HeaderText = "Delete";
-            Column7.Name = "Delete";
-            Column7.Text = "Delete";
-            Column7.UseColumnTextForButtonValue = true;
-            Column7.Width = 100;
+                Column7.HeaderText = "Delete";
+                Column7.Name = "Delete";
+                Column7.Text = "Delete";
+                Column7.UseColumnTextForButtonValue = true;
+                Column7.Width = 100;
 
-            dataGridView1.AutoGenerateColumns = false;
+                dataGridView1.AutoGenerateColumns = false;
 
-            dataGridView1.DataSource = inventory;
+                dataGridView1.DataSource = inventory;
 
-            //populates the dropdown
-            populateModelDropdown();
+                //populates the dropdown
+                populateModelDropdown();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
+
+        #endregion
 
         #region Methods
 
@@ -94,10 +111,18 @@ namespace _4780_final_car_POS
         /// </summary>
         public void updateInventoryList()
         {
-            //sets the binding list
-            inventory = DataControl.getCarList();
+            try
+            {
+                //sets the binding list
+                inventory = DataControl.getCarList();
 
-            dataGridView1.DataSource = inventory;
+                //binds the binding list to the datagrid view
+                dataGridView1.DataSource = inventory;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -198,13 +223,13 @@ namespace _4780_final_car_POS
         /// <summary>
         /// Handles the cancel buttons functionality, returns the user to the main menu screen.
         /// </summary>
-        /// <param name="sender"></param>
+        /// <param name="sender">btn cancel</param>
         /// <param name="e"></param>
         private void btnCancel_Click(object sender, EventArgs e)
         {
             try
             {
-                //hids the form
+                //hides the form
                 this.Hide();
             }
             catch (Exception ex)

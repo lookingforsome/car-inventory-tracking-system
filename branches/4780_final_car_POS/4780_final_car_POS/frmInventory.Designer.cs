@@ -50,11 +50,11 @@
             // btnCancel
             // 
             this.btnCancel.Location = new System.Drawing.Point(665, 636);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(100, 28);
             this.btnCancel.TabIndex = 0;
-            this.btnCancel.Text = "Cancel";
+            this.btnCancel.Text = "Exit";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
@@ -159,7 +159,7 @@
             // bnt_addCar
             // 
             this.bnt_addCar.Location = new System.Drawing.Point(399, 30);
-            this.bnt_addCar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bnt_addCar.Margin = new System.Windows.Forms.Padding(4);
             this.bnt_addCar.Name = "bnt_addCar";
             this.bnt_addCar.Size = new System.Drawing.Size(100, 28);
             this.bnt_addCar.TabIndex = 13;
@@ -170,7 +170,7 @@
             // btn_clear
             // 
             this.btn_clear.Location = new System.Drawing.Point(507, 30);
-            this.btn_clear.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btn_clear.Margin = new System.Windows.Forms.Padding(4);
             this.btn_clear.Name = "btn_clear";
             this.btn_clear.Size = new System.Drawing.Size(100, 28);
             this.btn_clear.TabIndex = 14;
@@ -221,7 +221,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.btnCancel);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmInventory";
             this.Text = "frmInventory";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

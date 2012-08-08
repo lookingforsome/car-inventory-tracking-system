@@ -1024,7 +1024,7 @@ static class DataControl
             int modelNumber = int.Parse(ds.Tables[0].Rows[0][0].ToString());
 
             //sets the sql query to insert the values into the inventory table
-            sqlQuery = "INSERT INTO Inventory(VIN, ModelKey, Price, VehicleYear, Sold, Description) VALUES('" + vin + "', " + modelNumber + ", " + price + ", " + year + ", 0 , '" + description + "');";
+            sqlQuery = "INSERT INTO Inventory(VIN, ModelKey, Price, VehicleYear, Sold, Description) VALUES(" + vin + ", " + modelNumber + ", " + price + ", " + year + ", 0 , '" + description + "');";
             da.ExecuteNonQuery(sqlQuery);
         }
         catch (Exception ex)
