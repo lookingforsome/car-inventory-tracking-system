@@ -245,6 +245,7 @@ static class DataControl
             clsDataAccess da = new clsDataAccess(); // Object that connects to the database and executes queries
             int result = 0;                         // Represents whether the query was successful
             int updateErrors = 0;                   // Represents the number of update errors when updating invoice items
+            int iRet = 0;                           //Represents the number of rows returned from a given query
 
             DateTime dtPurchaseDate = DateTime.Parse(purchaseDate);     //converted purchase date to a date time object
 
@@ -286,7 +287,39 @@ static class DataControl
                             return false;
                     }
                     else
-                        return false;
+                    {
+                        //query to see if there are invoice items still in the database for the given invoiceID, if so the delete didn't work and you should return false.
+                        sqlQuery = "SELECT * FROM InvoiceItems WHERE InvoiceKey = " + invoiceID + ";";
+                        da.ExecuteSQLStatement(sqlQuery, ref iRet);
+
+                        //check to see how many rows was returned, if greater than 0, return false.  Since the database delete was unsuccessful.
+                        //Otherwise, just insert the new/updated items into the database.
+                        if (iRet > 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            //add the new/updated invoice items into the database.
+                            foreach (var item in invoiceItems)
+                            {
+                                sqlQuery = "INSERT INTO InvoiceItems (VIN, InvoiceKey) VALUES (" + Convert.ToInt64(item.vin) + ", " + invoiceID + ")";
+                                result = da.ExecuteNonQuery(sqlQuery);
+
+                                if (result != 1)
+                                {
+                                    updateErrors++;
+                                }
+                            }
+
+                            if (updateErrors == 0)
+                            {
+                                return true;
+                            }
+                            else
+                                return false;
+                        }
+                    }
                 }
                 else
                     return true;
