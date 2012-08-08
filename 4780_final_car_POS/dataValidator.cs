@@ -122,14 +122,14 @@ class dataValidator
     /// </summary>
     /// <param name="date">string that is passed into to be tested.</param>
     /// <returns>True if it is a valid date and time, false otherwise.</returns>
-    public bool isDate(string date)
+    public bool isDate(string dateTime)
     {
         try
         {
             //create a temporary date time variable to house the tested output of the try parse.
             DateTime tempDate;
 
-            if (DateTime.TryParse(date, out tempDate))
+            if (DateTime.TryParse(dateTime, out tempDate))
             {
                 return true;
             }
